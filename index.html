@@ -618,7 +618,6 @@ body.editing .tile-admin-tools{display:flex}
   <div>
    <b id="qrTitle">สแกนเพื่อเปิดพอร์ตโฟลิโอนี้</b>
    <p id="qrDesc">สแกนด้วยกล้องมือถือเพื่อเปิดดูเซ็ตวิลล่าและส่งต่อให้ลูกค้าได้ทันที</p>
-   <button type="button" class="qr-edit-btn" id="btnQrUrl">✎ ตั้งค่าลิงก์ QR Code</button>
   </div>
  </div>
 </div>
@@ -836,23 +835,6 @@ body.editing .tile-admin-tools{display:flex}
  </form>
 </dialog>
 
-<!-- Modal: Custom QR Link -->
-<dialog id="qrDlg" class="modal-box" style="max-width:480px">
- <h3>ตั้งค่าลิงก์ของ QR Code</h3>
- <form id="qrForm">
-  <div class="field">
-   <label for="qrUrlInput">ลิงก์เว็บไซต์ที่ต้องการให้สแกนเปิด</label>
-   <input id="qrUrlInput" type="url" required placeholder="https://share.gemini.google/sdyZQmIveVnn">
-   <div class="hint">ค่าเริ่มต้นตั้งไว้ที่ https://share.gemini.google/sdyZQmIveVnn</div>
-  </div>
-  <div class="modal-foot">
-   <button type="button" class="adm-btn" id="qrDefaultBtn">ใช้ลิงก์ที่ตั้งไว้</button>
-   <button type="button" class="adm-btn" id="qrCancel">ยกเลิก</button>
-   <button type="submit" class="btn">อัปเดต QR</button>
-  </div>
- </form>
-</dialog>
-
 <button type="button" class="admin-fab" id="adminFab" aria-pressed="false">
  <span>🔐</span>
  <span id="fabLabel">ปุ่มหลังบ้าน</span>
@@ -863,7 +845,7 @@ body.editing .tile-admin-tools{display:flex}
 var INITIAL_DATA = {
   lang: 'th',
   ownerPin: '2026',
-  customQrUrl: 'https://share.gemini.google/sdyZQmIveVnn',
+  customQrUrl: 'https://gcm01test-png.github.io/Photo-portfolio/',
   site: {
     brandTh: 'ชื่อของคุณ · ช่างภาพวิลล่า',
     brandEn: 'Your Name · Villa Photographer',
@@ -1275,8 +1257,7 @@ var QRGen = (function(){
 var $ = function(id){ return document.getElementById(id); };
 
 function resolveTargetUrl(){
-  if (STATE.customQrUrl && STATE.customQrUrl.trim()) return STATE.customQrUrl.trim();
-  return 'https://share.gemini.google/sdyZQmIveVnn';
+  return 'https://gcm01test-png.github.io/Photo-portfolio/';
 }
 function renderQr(){
   $('qrBox').innerHTML = QRGen.toSvg(resolveTargetUrl(), '#151a22');
@@ -1470,7 +1451,6 @@ function applyLang(){
   $('btnLine').href = STATE.site.line;
   $('qrTitle').textContent = L.qrTitle;
   $('qrDesc').textContent = L.qrDesc;
-  $('btnQrUrl').textContent = L.btnQrUrl;
   $('vClose').textContent = L.closeBtn;
   $('fabLabel').textContent = ownerUnlocked ? L.fabUnlocked : L.fabLocked;
   $('footerText').textContent = '© 2026 ' + brand + ' · ' + L.footerSuffix;
@@ -1743,26 +1723,6 @@ $('siteForm').addEventListener('submit', function(e){
   saveState();
   applyLang();
   $('siteDlg').close();
-});
-
-// QR Code Link Modal
-$('btnQrUrl').addEventListener('click', function(){
-  $('qrUrlInput').value = resolveTargetUrl();
-  $('qrDlg').showModal();
-});
-$('qrDefaultBtn').addEventListener('click', function(){
-  STATE.customQrUrl = 'https://share.gemini.google/sdyZQmIveVnn';
-  saveState();
-  renderQr();
-  $('qrDlg').close();
-});
-$('qrCancel').addEventListener('click', function(){ $('qrDlg').close(); });
-$('qrForm').addEventListener('submit', function(e){
-  e.preventDefault();
-  STATE.customQrUrl = $('qrUrlInput').value.trim() || 'https://share.gemini.google/sdyZQmIveVnn';
-  saveState();
-  renderQr();
-  $('qrDlg').close();
 });
 
 // Reset State
