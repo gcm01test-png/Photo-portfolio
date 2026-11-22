@@ -28,10 +28,10 @@
   --surface:#ffffff;
   --panel:#efeae1;
   --ink:#151a22;
-  --muted:#5d646b;
-  --line:#ded7ca;
-  --accent:#9c7a44;
-  --accent-soft:rgba(156,122,68,.12);
+  --muted:#474e57;
+  --line:#d6cebf;
+  --accent:#7d5d2b;
+  --accent-soft:rgba(125,93,43,.13);
   --on-accent:#ffffff;
   --shadow:0 20px 50px rgba(21,26,34,.07);
   color-scheme:light;
@@ -312,6 +312,7 @@ section h2{font-size:clamp(28px,4vw,44px)}
 .tile .img svg,.tile .img img,.tile .img video{
   display:block;width:100%;height:100%;object-fit:cover;
   transition:transform .5s cubic-bezier(.22,1,.36,1);
+  -webkit-user-drag:none;user-drag:none;-webkit-touch-callout:none;
 }
 .tile:hover .img svg,.tile:hover .img img{transform:scale(1.04)}
 .set-code-badge{
@@ -482,13 +483,103 @@ section h2{font-size:clamp(28px,4vw,44px)}
   box-shadow:0 14px 34px rgba(0,0,0,.35);
   backface-visibility:hidden;
   -webkit-backface-visibility:hidden;
-  transform-style:preserve-3d;
 }
 .card-face.front{
-  transform:rotateY(0deg) translateZ(1px);
+  transform:rotateY(0deg);
 }
 .card-face.back{
-  transform:rotateY(180deg) translateZ(1px);
+  transform:rotateY(-180deg);
+}
+
+/* Fullscreen / Centered Lightbox for 3D Business Card */
+.card-lightbox{
+  position:fixed;
+  inset:0;
+  z-index:9998;
+  background:rgba(7,9,12,.9);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:clamp(16px, 4vw, 36px);
+  gap:18px;
+}
+.card-lightbox.open{display:flex}
+.card-lightbox-top{
+  width:100%;
+  max-width:740px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  color:var(--ink);
+}
+.card-lightbox-title{
+  font-family:"Cormorant Garamond","Noto Serif Thai",serif;
+  font-size:clamp(20px, 2.8vw, 28px);
+  margin:0;
+}
+.card-lightbox-stage{
+  width:100%;
+  max-width:740px;
+  aspect-ratio:1.68/1;
+  perspective:1800px;
+  touch-action:none;
+  cursor:grab;
+  user-select:none;
+}
+.card-lightbox-stage:active{cursor:grabbing}
+.card-lightbox-stage .card-face{
+  border-radius:24px;
+  box-shadow:0 28px 70px rgba(0,0,0,.6);
+}
+.card-lightbox-stage .card-default-art{
+  padding:clamp(22px, 4vw, 38px);
+}
+.card-lightbox-stage .card-art-title{
+  font-size:clamp(24px, 4vw, 38px);
+}
+.card-lightbox-stage .card-art-sub{
+  font-size:clamp(13px, 1.8vw, 16px);
+}
+.card-lightbox-stage .card-art-foot{
+  font-size:clamp(12px, 1.5vw, 14px);
+}
+.card-lightbox-ctrl{
+  width:100%;
+  max-width:740px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:14px 18px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.card-lightbox-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.card-lightbox-row input[type="range"]{
+  flex:1;
+  accent-color:var(--accent);
+  height:24px;
+  cursor:pointer;
+  margin:0;
+}
+.card-lightbox-btns{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.card-hint-txt{
+  font-size:12.5px;
+  color:var(--muted);
 }
 .card-face img{
   display:block;
@@ -496,33 +587,6 @@ section h2{font-size:clamp(28px,4vw,44px)}
   height:100%;
   object-fit:cover;
   pointer-events:none;
-}
-/* Auto Watermark Overlay on Portfolio Stage, Tiles & Lightbox */
-.stage::after,.tile .img::after,.viewer-stage-wrap::after{
-  content:"© InthatPhotographer";
-  position:absolute;
-  right:14px;
-  bottom:12px;
-  font:500 12px/1 "Prompt",sans-serif;
-  letter-spacing:.06em;
-  color:rgba(255,255,255,.46);
-  text-shadow:0 1px 4px rgba(0,0,0,.42);
-  pointer-events:none;
-  z-index:4;
-}
-.tile .img::after{
-  right:auto;
-  left:10px;
-  bottom:10px;
-  font-size:10.5px;
-  color:rgba(255,255,255,.44);
-}
-.viewer-stage-wrap::after{
-  right:auto;
-  left:14px;
-  bottom:14px;
-  font-size:13px;
-  color:rgba(255,255,255,.46);
 }
 .card-default-art{
   width:100%;
@@ -585,6 +649,42 @@ section h2{font-size:clamp(28px,4vw,44px)}
   font-weight:500;
   color:var(--accent);
   white-space:nowrap;
+}
+:root[data-theme="light"] .contact .lead,
+:root[data-theme="light"] .b-step-txt span,
+:root[data-theme="light"] .service-area-row,
+:root[data-theme="light"] .price-note-box,
+:root[data-theme="light"] .card-hint-txt{
+  color:#3c434c;
+}
+:root[data-theme="light"] .b-step,
+:root[data-theme="light"] .area-pill,
+:root[data-theme="light"] .price-note-box,
+:root[data-theme="light"] .quick-copy-btn{
+  background:#f4f0e8;
+  border-color:#d2c8b6;
+}
+:root[data-theme="light"] .contact-pill-btn:not(.primary){
+  background:#f6f3ec;
+  border-color:#cfc5b2;
+  color:#151a22;
+}
+:root[data-theme="light"] .card-default-art{
+  background:linear-gradient(135deg, #fbf9f5 0%, #f1ece2 58%, #e8decb 100%);
+  color:#151a22;
+  border:1px solid #d5cbb8;
+}
+:root[data-theme="light"] .card-default-art.back-art{
+  background:linear-gradient(135deg, #f3eee4 0%, #f9f7f2 55%, #e6dfd1 100%);
+  color:#151a22;
+  border:1px solid #d5cbb8;
+}
+:root[data-theme="light"] .card-default-art .card-art-sub{
+  color:#434a53;
+}
+:root[data-theme="light"] .card-default-art .card-art-foot{
+  color:#6c4f22;
+  border-top-color:rgba(21,26,34,.12);
 }
 .contact-card-actions{
   display:flex;
@@ -682,10 +782,58 @@ dialog::backdrop{background:rgba(8,10,13,.78);backdrop-filter:blur(6px)}
   overflow:hidden;
   aspect-ratio:16/10;
   background:#090c0e;
+  cursor:zoom-in;
 }
-.viewer-stage{width:100%;height:100%}
+.viewer-stage{width:100%;height:100%;cursor:zoom-in}
 .viewer-stage svg,.viewer-stage img,.viewer-stage video,.viewer-stage iframe{
   display:block;width:100%;height:100%;object-fit:contain;border:0;
+  -webkit-user-drag:none;user-drag:none;-webkit-touch-callout:none;
+}
+.media-shield{
+  position:absolute;inset:0;z-index:2;
+  background:transparent;
+}
+body.editing .media-shield{pointer-events:none}
+.zoom-overlay{
+  position:fixed;inset:0;z-index:9999;
+  background:rgba(5,7,10,.96);
+  display:none;flex-direction:column;
+  touch-action:none;user-select:none;
+}
+.zoom-overlay.open{display:flex}
+.zoom-bar{
+  position:relative;z-index:3;
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+  padding:calc(12px + env(safe-area-inset-top,0px)) 16px 12px;
+  background:linear-gradient(to bottom, rgba(0,0,0,.72), transparent);
+  color:#fff;font-size:13px;
+}
+.zoom-tools{display:flex;align-items:center;gap:8px}
+.zoom-pill{
+  padding:7px 13px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.25);
+  background:rgba(24,28,34,.85);color:#fff;
+  font:400 13px/1 "Prompt",sans-serif;cursor:pointer;
+}
+.zoom-canvas{
+  flex:1;position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.zoom-target{
+  width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  transform-origin:center center;
+  will-change:transform;
+}
+.zoom-target img,.zoom-target svg{
+  max-width:100vw;max-height:100%;width:100%;height:100%;
+  object-fit:contain;pointer-events:none;display:block;
+}
+.zoom-hint{
+  position:absolute;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:50%;
+  transform:translateX(-50%);padding:6px 14px;border-radius:999px;
+  background:rgba(20,24,30,.8);color:rgba(255,255,255,.85);
+  font-size:12px;white-space:nowrap;pointer-events:none;
 }
 .slide-nav{
   position:absolute;top:50%;transform:translateY(-50%);
@@ -710,6 +858,14 @@ dialog::backdrop{background:rgba(8,10,13,.78);backdrop-filter:blur(6px)}
   padding:8px 18px;border-radius:999px;border:1px solid var(--line);
   background:var(--panel);color:var(--ink);font:inherit;font-size:13.5px;cursor:pointer;
 }
+.cap-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.owner-dl-btn{
+  display:none;
+  padding:8px 16px;border-radius:999px;border:1px solid var(--accent);
+  background:var(--accent-soft);color:var(--accent);
+  font:500 13.5px/1.2 "Prompt",sans-serif;cursor:pointer;
+}
+body.editing .owner-dl-btn{display:inline-flex;align-items:center;gap:6px}
 .viewer-edit-panel{
   display:none;
   margin-top:12px;
@@ -960,7 +1116,7 @@ body.editing .tile-admin-tools{display:flex}
   </div>
  </section>
 
- <!-- Contact & Business Card Section (Chat Box Removed) -->
+ <!-- Contact & Business Card Section -->
  <div class="contact" id="contact">
   <div>
    <div class="eyebrow">BOOKING &amp; INQUIRY</div>
@@ -1047,14 +1203,17 @@ body.editing .tile-admin-tools{display:flex}
   <div class="viewer-stage" id="vStage"></div>
   <button type="button" class="slide-nav prev" id="vPrev" aria-label="ภาพก่อนหน้าในเซ็ต">‹</button>
   <button type="button" class="slide-nav next" id="vNext" aria-label="ภาพถัดไปในเซ็ต">›</button>
-  <span class="slide-counter" id="vCounter">1 / 1</span>
+  <div class="slide-counter" id="vCounter">1 / 1</div>
  </div>
  <div class="cap">
   <div>
    <strong id="vItemTitle"></strong><br>
    <span id="vItemNote" style="font-size:14px;color:var(--muted)"></span>
   </div>
-  <button type="button" id="vClose">ปิด</button>
+  <div class="cap-actions">
+   <button type="button" class="owner-dl-btn" id="vOwnerDownload">⬇ โหลดภาพ</button>
+   <button type="button" id="vClose">ปิด</button>
+  </div>
  </div>
  <div class="viewer-edit-panel" id="viewerEditPanel">
   <div style="font-size:12px;color:var(--accent);font-weight:500;margin-bottom:8px">✎ แก้ไขข้อความในหน้านี้ (บันทึกอัตโนมัติในโหมดหลังบ้าน)</div>
@@ -1079,6 +1238,23 @@ body.editing .tile-admin-tools{display:flex}
  </div>
  <div class="thumb-strip" id="vThumbs" role="tablist" aria-label="ภาพย่อในเซ็ตวิลล่า"></div>
 </dialog>
+
+<!-- Fullscreen Zoom Overlay -->
+<div class="zoom-overlay" id="zoomOverlay" role="dialog" aria-modal="true" aria-label="ขยายภาพเต็มจอ">
+ <div class="zoom-bar">
+  <span id="zoomCaption"></span>
+  <div class="zoom-tools">
+   <button type="button" class="zoom-pill" id="zoomOutBtn">−</button>
+   <button type="button" class="zoom-pill" id="zoomResetBtn">100%</button>
+   <button type="button" class="zoom-pill" id="zoomInBtn">+</button>
+   <button type="button" class="zoom-pill" id="zoomCloseBtn">✕ ปิด</button>
+  </div>
+ </div>
+ <div class="zoom-canvas" id="zoomCanvas">
+  <div class="zoom-target" id="zoomTarget"></div>
+ </div>
+ <div class="zoom-hint" id="zoomHint">จีบนิ้วเพื่อซูม · แตะ 2 ครั้งเพื่อขยาย · ลากเพื่อเลื่อนดู</div>
+</div>
 
 <!-- Owner PIN Modal -->
 <dialog id="pinDlg" class="modal-box" style="max-width:420px">
@@ -1256,19 +1432,91 @@ body.editing .tile-admin-tools{display:flex}
  </div>
  <div class="modal-foot">
   <button type="button" class="adm-btn" id="btnCopyExportCode">📋 คัดลอกโค้ดทั้งหมด</button>
-  <button type="button" class="adm-btn" id="btnDownloadExportCode">⬇ ดาวน์โหลดไฟล์ .html</button>
+  <button type="button" class="adm-btn" id="btnDownloadExportCode">⬇ ดาวน์โหลดเป็น index.html</button>
   <button type="button" class="btn" id="codeExportClose">ปิด</button>
  </div>
 </dialog>
 
-<button type="button" class="admin-fab" id="adminFab" aria-pressed="false">
- <span>🔐</span>
- <span id="fabLabel">*</span>
-</button>
+<button type="button" class="admin-fab" id="adminFab" aria-pressed="false"><span id="fabLabel">*</span></button>
 <div class="toast" id="statusToast" role="status" aria-live="polite"></div>
 
+<!-- Centered Large 3D Business Card Lightbox -->
+<div class="card-lightbox" id="cardLightbox" role="dialog" aria-modal="true" aria-label="นามบัตรขนาดใหญ่แบบหมุนหน้าหลัง">
+ <div class="card-lightbox-top">
+  <h3 class="card-lightbox-title" id="cardLightboxTitle">นามบัตรช่างภาพ</h3>
+  <button type="button" class="zoom-pill" id="cardLightboxClose">✕ ปิด</button>
+ </div>
+ <div class="card-lightbox-stage" id="cardLightboxStage"></div>
+ <div class="card-lightbox-ctrl">
+  <div class="card-lightbox-row">
+   <input type="range" id="cardLightboxRange" min="0" max="100" value="0" aria-label="หมุนนามบัตรหน้าและหลังขนาดใหญ่">
+   <output id="cardLightboxOut" for="cardLightboxRange" style="font-size:13px;font-weight:500;color:var(--accent);white-space:nowrap">ด้านหน้า · 0%</output>
+  </div>
+  <div class="card-lightbox-btns">
+   <span class="card-hint-txt" id="cardLightboxHint">ลากซ้าย-ขวาบนนามบัตร หรือกดปุ่มเพื่อพลิกหน้า/หลัง</span>
+   <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button type="button" class="adm-btn" id="cardFlipFrontBtn">◀ ด้านหน้า</button>
+    <button type="button" class="adm-btn primary" id="cardFlipBackBtn">ด้านหลัง ▶</button>
+   </div>
+  </div>
+ </div>
+</div>
+
 <script>
-// === Embedded Data ===
+// === Visitor Download Deterrence (Context Menu & Drag Guard) ===
+document.addEventListener('contextmenu', function(e){
+  if (ownerUnlocked) return;
+  if (e.target && e.target.closest('img, svg, video, .stage, .tile .img, .viewer-stage-wrap, .zoom-overlay, .contact-card-stage, .card-lightbox-stage')) {
+    e.preventDefault();
+    showToast('สงวนลิขสิทธิ์ภาพถ่าย · ห้ามดาวน์โหลดหรือคัดลอกภาพ');
+  }
+});
+
+document.addEventListener('dragstart', function(e){
+  if (ownerUnlocked) return;
+  if (e.target && e.target.closest('img, svg, video, .stage, .tile .img, .viewer-stage-wrap, .zoom-overlay')) {
+    e.preventDefault();
+  }
+});
+
+function attachMediaShields(){
+  var selectors = ['.stage', '.tile .img', '.zoom-canvas'];
+  selectors.forEach(function(sel){
+    document.querySelectorAll(sel).forEach(function(box){
+      if (!box.querySelector('.media-shield')) {
+        var shield = document.createElement('div');
+        shield.className = 'media-shield';
+        shield.setAttribute('aria-hidden', 'true');
+        box.appendChild(shield);
+      }
+    });
+  });
+}
+
+var INITIAL_HTML_TEMPLATE = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+var STORAGE_KEY = 'villa_portfolio_state_v1';
+var ownerUnlocked = false;
+
+function $(id){ return document.getElementById(id); }
+function escAttr(s){
+  return String(s || '')
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+function clone(obj){ return JSON.parse(JSON.stringify(obj)); }
+
+function showToast(msg){
+  var t = $('statusToast');
+  if (!t) return;
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(showToast._timer);
+  showToast._timer = setTimeout(function(){ t.classList.remove('show'); }, 2400);
+}
+
 var INITIAL_DATA = {
   lang: 'th',
   ownerPin: '2538',
@@ -1277,9 +1525,9 @@ var INITIAL_DATA = {
     brandTh: 'อินทัช · ช่างภาพวิลล่า',
     brandEn: 'Inthat · Villa Photographer',
     heroTh: 'ตัวอย่างผลงาน รับจ้างถ่ายภาพวิดีโอและภาพมุมสูง',
-    heroEn: 'Selected Works · Video & Aerial Photography',
+    heroEn: 'Villa Photography, Walkthrough Video & Aerial Portfolio',
     subTh: 'ผมแยกผลงานเป็นเซ็ตตามวิลล่าแต่ละหลัง เพื่อให้ดูภาพรวมและเลื่อนดูทีละมุมในหลังเดียวกันได้สะดวกโดยไม่ปะปนกัน',
-    subEn: 'Each villa is organized as its own set so you can swipe through angles and spaces of a single home without mixing projects.',
+    subEn: 'Organized into villa sets so you can browse every angle of each property in one place.',
     email: 'hello@example.com',
     line: 'https://line.me/ti/p/your-line-id',
     heroCardImg: '',
@@ -1287,607 +1535,652 @@ var INITIAL_DATA = {
   },
   sets: [
     {
-      id: 'set-1',
+      id: 'villa-01',
       code: 'หลังที่ 01',
       c: 'กลางวัน',
       loc: 'เกาะแก้ว · ภูเก็ต',
       titleTh: 'พูลวิลล่าสวนทรอปิคอล สระว่ายน้ำส่วนตัว',
-      titleEn: 'Tropical Garden Pool Villa Set',
+      titleEn: 'Tropical Pool Villa Set',
       subTh: 'เซ็ต 4 ภาพ · สระว่ายน้ำ สวนร่มรื่น และตัวบ้าน',
-      subEn: '4 shots · Pool, lush garden & exterior',
+      subEn: '4 photos · Pool, tropical garden & exterior',
       coverIdx: 0,
       items: [
-        { kind:'svg', labelTh:'ภาพที่ 1/4 · สระว่ายน้ำและสวนทรอปิคอล (กลางวัน)', labelEn:'Shot 1/4 · Pool & Tropical Garden (Daylight)', t:.45, f:0, src:'' },
-        { kind:'svg', labelTh:'ภาพที่ 2/4 · มุมมองฝั่งตรงข้ามและแนวต้นปาล์ม', labelEn:'Shot 2/4 · Reverse Angle & Palm Line', t:.52, f:1, src:'' },
-        { kind:'svg', labelTh:'ภาพที่ 3/4 · แสงเช้าอบอุ่นหน้าวิลล่า', labelEn:'Shot 3/4 · Warm Morning Frontage', t:.18, f:0, src:'' },
-        { kind:'svg', labelTh:'ภาพที่ 4/4 · แสงพลบค่ำเปิดไฟริมสระ', labelEn:'Shot 4/4 · Twilight Pool Lighting', t:.92, f:0, src:'' }
+        { kind: 'svg', labelTh: 'ภาพที่ 1/4 · สระว่ายน้ำและสวนทรอปิคอล (กลางวัน)', labelEn: '1/4 · Pool & Tropical Garden (Daylight)', t: 0.55, f: 0, src: '' },
+        { kind: 'svg', labelTh: 'ภาพที่ 2/4 · มุมด้านข้างและลานพักผ่อน', labelEn: '2/4 · Side Angle & Lounge Deck', t: 0.45, f: 1, src: '' },
+        { kind: 'svg', labelTh: 'ภาพที่ 3/4 · แสงบ่ายหน้าสระว่ายน้ำ', labelEn: '3/4 · Afternoon Poolside View', t: 0.65, f: 0, src: '' },
+        { kind: 'svg', labelTh: 'ภาพที่ 4/4 · แสงพลบค่ำเปิดไฟรอบวิลล่า', labelEn: '4/4 · Twilight Villa Lighting', t: 0.15, f: 0, src: '' }
       ]
     },
     {
-      id: 'set-2',
+      id: 'villa-02',
       code: 'หลังที่ 02',
       c: 'พลบค่ำ',
-      loc: 'บางเทา · ภูเก็ต',
-      titleTh: 'วิลล่าโมเดิร์นสระแนวยาว ช่วงแสงพลบค่ำ',
-      titleEn: 'Modern Lap-Pool Villa Twilight Set',
-      subTh: 'เซ็ต 3 ภาพ · แสงเย็นและแสงไฟสถาปัตยกรรม',
-      subEn: '3 shots · Twilight & architectural lights',
+      loc: 'เชิงทะเล · ภูเก็ต',
+      titleTh: 'โมเดิร์นลักชัวรีวิลล่า แสงยามค่ำ',
+      titleEn: 'Modern Luxury Villa Twilight Set',
+      subTh: 'เซ็ต 3 ภาพ · แสงไฟสถาปัตยกรรมและริมสระ',
+      subEn: '3 photos · Architectural lighting & pool edge',
       coverIdx: 0,
       items: [
-        { kind:'svg', labelTh:'ภาพที่ 1/3 · สระแนวยาวช่วงพลบค่ำ', labelEn:'Shot 1/3 · Lap Pool at Twilight', t:.95, f:0, src:'' },
-        { kind:'svg', labelTh:'ภาพที่ 2/3 · แสงยามเย็นก่อนเข้าพลบค่ำ', labelEn:'Shot 2/3 · Late Afternoon Glow', t:.76, f:1, src:'' },
-        { kind:'svg', labelTh:'ภาพที่ 3/3 · มุมมองแสงกลางวัน', labelEn:'Shot 3/3 · Daylight Reference', t:.48, f:0, src:'' }
+        { kind: 'svg', labelTh: 'ภาพที่ 1/3 · บรรยากาศพลบค่ำหน้าวิลล่า', labelEn: '1/3 · Twilight Front Elevation', t: 0.12, f: 0, src: '' },
+        { kind: 'svg', labelTh: 'ภาพที่ 2/3 · สะท้อนเงาแสงไฟบนผิวน้ำ', labelEn: '2/3 · Pool Reflection at Dusk', t: 0.2, f: 1, src: '' },
+        { kind: 'svg', labelTh: 'ภาพที่ 3/3 · ระเบียงพักผ่อนยามค่ำ', labelEn: '3/3 · Evening Terrace View', t: 0.1, f: 0, src: '' }
       ]
     },
     {
-      id: 'set-3',
+      id: 'villa-03',
       code: 'หลังที่ 03',
       c: 'ภายใน',
-      loc: 'เชิงทะเล · ภูเก็ต',
-      titleTh: 'บ้านพักตากอากาศ 2 ชั้น วิวภูเขาและสระ',
-      titleEn: 'Two-Storey Retreat & Pool Set',
-      subTh: 'เซ็ต 3 ภาพ · โซนรับแขก เฉลียง และสระน้ำ',
-      subEn: '3 shots · Living terrace, courtyard & pool',
+      loc: 'ราไวย์ · ภูเก็ต',
+      titleTh: 'ห้องนั่งเล่นและพื้นที่รับประทานอาหารแบบเปิดโล่ง',
+      titleEn: 'Open-Plan Living & Dining Set',
+      subTh: 'เซ็ต 3 ภาพ · คุมโทนแสงธรรมชาติและเฟอร์นิเจอร์',
+      subEn: '3 photos · Balanced natural light & interiors',
       coverIdx: 0,
       items: [
-        { kind:'svg', labelTh:'ภาพที่ 1/3 · มุมมองเชื่อมตัวบ้านกับสระน้ำ', labelEn:'Shot 1/3 · Pavilion to Pool View', t:.62, f:1, src:'' },
-        { kind:'svg', labelTh:'ภาพที่ 2/3 · แสงเช้าสว่างโปร่ง', labelEn:'Shot 2/3 · Crisp Morning Light', t:.15, f:0, src:'' },
-        { kind:'svg', labelTh:'ภาพที่ 3/3 · บรรยากาศช่วงเย็น', labelEn:'Shot 3/3 · Evening Mood', t:.85, f:1, src:'' }
+        { kind: 'svg', labelTh: 'ภาพที่ 1/3 · มุมกว้างห้องนั่งเล่นเชื่อมสระ', labelEn: '1/3 · Living Room Opening to Pool', t: 0.5, f: 0, src: '' },
+        { kind: 'svg', labelTh: 'ภาพที่ 2/3 · โต๊ะอาหารและเคาน์เตอร์ครัว', labelEn: '2/3 · Dining Area & Kitchen Island', t: 0.52, f: 1, src: '' },
+        { kind: 'svg', labelTh: 'ภาพที่ 3/3 · ห้องนอนใหญ่เปิดรับแสงเช้า', labelEn: '3/3 · Master Suite Morning Light', t: 0.6, f: 0, src: '' }
       ]
     }
   ]
 };
 
-var STORAGE_KEY = 'villa_portfolio_sets_v1';
-var INITIAL_HTML_TEMPLATE = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
-var ownerUnlocked = false;
-var toastTimer = null;
-var $ = function(id){ return document.getElementById(id); };
-
-function showToast(msg){
-  var el = $('statusToast');
-  if (!el) return;
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(function(){ el.classList.remove('show'); }, 2600);
-}
-
-function clone(o){ return JSON.parse(JSON.stringify(o)); }
-
-function normalizeSets(rawSets){
-  if (!Array.isArray(rawSets) || !rawSets.length) return clone(INITIAL_DATA.sets);
-  return rawSets.map(function(s, idx){
-    var items = Array.isArray(s.items) && s.items.length ? s.items : [
-      { kind:'svg', labelTh:'ภาพหลักของเซ็ต', labelEn:'Main Set Shot', t:.5, f:0, src:'' }
-    ];
-    var cov = (typeof s.coverIdx === 'number' && s.coverIdx >= 0 && s.coverIdx < items.length) ? s.coverIdx : 0;
-    return {
-      id: s.id || ('set-' + (idx + 1)),
-      code: s.code || ('หลังที่ ' + String(idx + 1).padStart(2, '0')),
-      c: s.c || 'กลางวัน',
-      loc: s.loc || '',
-      titleTh: s.titleTh || s.nameTh || ('วิลล่าเซ็ตที่ ' + (idx + 1)),
-      titleEn: s.titleEn || s.nameEn || ('Villa Set ' + (idx + 1)),
-      subTh: s.subTh || s.metaTh || (items.length + ' รูปในเซ็ตนี้'),
-      subEn: s.subEn || s.metaEn || (items.length + ' shots in set'),
-      coverIdx: cov,
-      items: items
-    };
-  });
-}
+var I18N = {
+  th: {
+    pageTitle: 'พอร์ตโฟลิโอช่างภาพวิลล่า',
+    navWork: 'เซ็ตวิลล่า',
+    navService: 'บริการ',
+    navContact: 'ติดต่อ',
+    heroCtaWork: 'ดูเซ็ตวิลล่าทั้งหมด',
+    heroCtaContact: 'ขอใบเสนอราคา',
+    workTitle: 'ผลงานแยกเป็นเซ็ตวิลล่า',
+    workLead: 'กดที่การ์ดวิลล่าหลังใดก็ได้ เพื่อเปิดเลื่อนดูภาพและวิดีโอทั้งหมดในเซ็ตนั้น',
+    svcTitle: 'แพ็กเกจบริการ',
+    svcLead: 'เลือกแพ็กเกจภาพและวิดีโอตามลักษณะวิลล่าและการใช้งานจริง',
+    svc1T: 'แพ็กเกจภาพถ่ายวิลล่า',
+    svc1D: 'เก็บภาพนิ่งครบทั้งภายนอก สระว่ายน้ำ สวน และห้องภายใน ทั้งแสงกลางวันและแสงพลบค่ำ',
+    svc2T: 'แพ็กเกจวิดีโอเดินชม',
+    svc2D: 'ถ่ายวิดีโอเล่าเรื่องและเดินชมพื้นที่วิลล่าอย่างลื่นไหล เหมาะสำหรับโพสต์โซเชียลและปล่อยเช่า',
+    svc3T: 'แพ็กเกจภาพและวิดีโอครบเซ็ต',
+    svc3D: 'รวมภาพถ่ายและวิดีโอวิลล่าเป็นเซ็ตเดียว พร้อมมุมสูงสำหรับเจ้าของโครงการ นายหน้า และรีสอร์ท',
+    ctTitle: 'มีวิลล่าที่อยากให้ถ่ายเป็นเซ็ต?',
+    ctLead: 'แจ้งทำเล จำนวนวิลล่า วันที่สะดวก และแพ็กเกจที่สนใจ แล้วผมจะตอบกลับพร้อมใบเสนอราคาโดยเร็ว',
+    bookingStepsHtml:
+      '<div class="b-step"><span class="b-step-num">01</span><div class="b-step-txt"><strong>ส่งข้อมูลวิลล่าเบื้องต้น</strong><span>ทำเล จำนวนห้องนอน และเลือกแพ็กเกจภาพหรือวิดีโอ</span></div></div>' +
+      '<div class="b-step"><span class="b-step-num">02</span><div class="b-step-txt"><strong>เสนอราคา &amp; นัดช่วงแสงสวยที่สุด</strong><span>วางแผนเวลาถ่ายกลางวัน-พลบค่ำให้เหมาะกับทิศทางแดดของบ้าน</span></div></div>' +
+      '<div class="b-step"><span class="b-step-num">03</span><div class="b-step-txt"><strong>ส่งมอบไฟล์ความละเอียดสูง</strong><span>รับลิงก์ดาวน์โหลดพร้อมลงเว็บ OTA และโซเชียลภายใน 2–3 วัน</span></div></div>',
+    serviceAreaHtml:
+      '<span>พื้นที่ให้บริการ:</span><span class="area-pill">ภูเก็ต</span><span class="area-pill">พังงา</span><span class="area-pill">กระบี่</span><span class="area-pill">ต่างจังหวัด (เดินทางได้)</span>',
+    copyBriefBtn: '📋 คัดลอกข้อความสอบถามด่วน (วางใน LINE / WhatsApp)',
+    copyBriefText: 'สวัสดีครับ สนใจจ้างถ่ายภาพ/วิดีโอวิลล่า\n- ทำเล: \n- จำนวนวิลล่า / ห้องนอน: \n- วันที่สะดวก: \n- แพ็กเกจที่สนใจ: ',
+    copyBriefToast: 'คัดลอกข้อความสอบถามเรียบร้อยแล้ว',
+    priceNote: '<strong>หมายเหตุ:</strong> ราคาจะขึ้นอยู่กับขนาดตัวบ้านและระยะทาง',
+    btnEmail: '✉ ส่งอีเมล',
+    btnLine: '💬 แอดไลน์',
+    closeBtn: 'ปิด',
+    fabLocked: '*',
+    fabUnlocked: '🔓 หลังบ้าน',
+    footerSuffix: 'สงวนลิขสิทธิ์ภาพทั้งหมด',
+    cats: { 'ทั้งหมด': 'ทั้งหมด', 'กลางวัน': 'กลางวัน', 'พลบค่ำ': 'พลบค่ำ', 'ภายใน': 'ภายใน' },
+    viewSetCta: 'ดูทั้งเซ็ต →',
+    photoCountUnit: 'รูป'
+  },
+  en: {
+    pageTitle: 'Villa Photographer Portfolio',
+    navWork: 'Villa Sets',
+    navService: 'Services',
+    navContact: 'Contact',
+    heroCtaWork: 'Browse Villa Sets',
+    heroCtaContact: 'Request a Quote',
+    workTitle: 'Portfolio Organized by Villa Set',
+    workLead: 'Click any villa card to open its full set of photos and walkthrough media.',
+    svcTitle: 'Service Packages',
+    svcLead: 'Choose photo and video coverage tailored to your property and marketing goals.',
+    svc1T: 'Villa Photography Package',
+    svc1D: 'Complete stills covering exteriors, pool, garden, and interiors across daylight and twilight.',
+    svc2T: 'Walkthrough Video Package',
+    svc2D: 'Smooth storytelling walkthroughs ideal for social media campaigns and vacation rentals.',
+    svc3T: 'Complete Photo & Video Set',
+    svc3D: 'Combined photo, walkthrough video, and aerial angles for developers, agents, and resorts.',
+    ctTitle: 'Have a villa set to shoot?',
+    ctLead: 'Share the location, number of villas, preferred dates, and package for a prompt quote.',
+    bookingStepsHtml:
+      '<div class="b-step"><span class="b-step-num">01</span><div class="b-step-txt"><strong>Share Initial Villa Details</strong><span>Location, bedroom count, and preferred photo or video package</span></div></div>' +
+      '<div class="b-step"><span class="b-step-num">02</span><div class="b-step-txt"><strong>Quote &amp; Best Light Scheduling</strong><span>Plan daylight and twilight timing around your property’s sun direction</span></div></div>' +
+      '<div class="b-step"><span class="b-step-num">03</span><div class="b-step-txt"><strong>High-Resolution Delivery</strong><span>Receive download links ready for OTAs and social channels in 2–3 days</span></div></div>',
+    serviceAreaHtml:
+      '<span>Service Areas:</span><span class="area-pill">Phuket</span><span class="area-pill">Phang Nga</span><span class="area-pill">Krabi</span><span class="area-pill">Other Provinces</span>',
+    copyBriefBtn: '📋 Copy Quick Inquiry Template (for LINE / WhatsApp)',
+    copyBriefText: 'Hello, I would like to inquire about villa photography/video:\n- Location: \n- Villas / Bedrooms: \n- Preferred Dates: \n- Package of Interest: ',
+    copyBriefToast: 'Quick inquiry template copied',
+    priceNote: '<strong>Note:</strong> Pricing varies depending on property size and travel distance.',
+    btnEmail: '✉ Email',
+    btnLine: '💬 LINE',
+    closeBtn: 'Close',
+    fabLocked: '*',
+    fabUnlocked: '🔓 Admin',
+    footerSuffix: 'All rights reserved',
+    cats: { 'ทั้งหมด': 'All', 'กลางวัน': 'Daylight', 'พลบค่ำ': 'Twilight', 'ภายใน': 'Interior' },
+    viewSetCta: 'View Set →',
+    photoCountUnit: 'shots'
+  }
+};
 
 function loadState(){
   try {
     var raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return clone(INITIAL_DATA);
-    var p = JSON.parse(raw);
-    return {
-      lang: p.lang === 'en' ? 'en' : 'th',
-      ownerPin: '2538',
-      site: Object.assign(clone(INITIAL_DATA.site), p.site || {}),
-      sets: normalizeSets(p.sets)
-    };
-  } catch(e){
-    return clone(INITIAL_DATA);
-  }
+    if (raw) {
+      var parsed = JSON.parse(raw);
+      return {
+        lang: parsed.lang || INITIAL_DATA.lang,
+        ownerPin: '2538',
+        watermarkText: 'InthatPhotographer',
+        site: Object.assign({}, INITIAL_DATA.site, parsed.site || {}),
+        sets: Array.isArray(parsed.sets) && parsed.sets.length ? parsed.sets : clone(INITIAL_DATA.sets)
+      };
+    }
+  } catch(e){}
+  return {
+    lang: INITIAL_DATA.lang,
+    ownerPin: '2538',
+    watermarkText: 'InthatPhotographer',
+    site: Object.assign({}, INITIAL_DATA.site),
+    sets: clone(INITIAL_DATA.sets)
+  };
 }
 
 var STATE = loadState();
+var activeCat = 'ทั้งหมด';
+
 function saveState(){
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(STATE));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      lang: STATE.lang,
+      ownerPin: '2538',
+      watermarkText: 'InthatPhotographer',
+      site: STATE.site,
+      sets: STATE.sets
+    }));
   } catch(e){
-    showToast('พื้นที่เบราว์เซอร์เต็ม แต่ข้อมูลยังอยู่ในหน้านี้ — กด "💾 เซฟโค้ด HTML" เพื่อบันทึกไฟล์ไปอัปขึ้น GitHub ได้เลย');
+    showToast('พื้นที่เก็บข้อมูลเบราว์เซอร์เต็ม แนะนำให้กด "เซฟโค้ด HTML" เพื่อเก็บไฟล์ไว้');
   }
 }
 
-var I18N = {
-  th: {
-    pageTitle: 'พอร์ตโฟลิโอช่างภาพวิลล่า',
-    navWork: 'เซ็ตวิลล่า', navService: 'บริการ', navContact: 'ติดต่อ',
-    heroCtaWork: 'ดูเซ็ตวิลล่าทั้งหมด', heroCtaContact: 'ขอใบเสนอราคา',
-    workTitle: 'ผลงานแยกเป็นเซ็ตวิลล่า',
-    workLead: 'กดที่การ์ดวิลล่าหลังใดก็ได้ เพื่อเปิดเลื่อนดูภาพและวิดีโอทั้งหมดในเซ็ตนั้น',
-    cats: { 'ทั้งหมด':'ทั้งหมด', 'กลางวัน':'กลางวัน', 'พลบค่ำ':'พลบค่ำ', 'ภายใน':'ภายใน' },
-    svcTitle: 'แพ็กเกจบริการ',
-    svcLead: 'เลือกแพ็กเกจภาพและวิดีโอตามลักษณะวิลล่าและการใช้งานจริง',
-    svc1T: 'แพ็กเกจภาพถ่ายวิลล่า', svc1D: 'เก็บภาพนิ่งครบทั้งภายนอก สระว่ายน้ำ สวน และห้องภายใน ทั้งแสงกลางวันและแสงพลบค่ำ',
-    svc2T: 'แพ็กเกจวิดีโอเดินชม', svc2D: 'ถ่ายวิดีโอเล่าเรื่องและเดินชมพื้นที่วิลล่าอย่างลื่นไหล เหมาะสำหรับโพสต์โซเชียลและปล่อยเช่า',
-    svc3T: 'แพ็กเกจภาพและวิดีโอครบเซ็ต', svc3D: 'รวมภาพถ่ายและวิดีโอวิลล่าเป็นเซ็ตเดียว พร้อมมุมสูงสำหรับเจ้าของโครงการ นายหน้า และรีสอร์ท',
-    ctTitle: 'มีวิลล่าที่อยากให้ถ่ายเป็นเซ็ต?',
-    ctLead: 'แจ้งทำเล จำนวนวิลล่า วันที่สะดวก และแพ็กเกจที่สนใจ แล้วผมจะตอบกลับพร้อมใบเสนอราคาโดยเร็ว',
-    bookingStepsHtml: '<div class="b-step"><span class="b-step-num">01</span><div class="b-step-txt"><strong>ส่งข้อมูลวิลล่าเบื้องต้น</strong><span>ทำเล จำนวนห้องนอน และเลือกแพ็กเกจภาพหรือวิดีโอ</span></div></div>'
-      + '<div class="b-step"><span class="b-step-num">02</span><div class="b-step-txt"><strong>เสนอราคา &amp; นัดช่วงแสงสวยที่สุด</strong><span>วางแผนเวลาถ่ายกลางวัน-พลบค่ำให้เหมาะกับทิศทางแดดของบ้าน</span></div></div>'
-      + '<div class="b-step"><span class="b-step-num">03</span><div class="b-step-txt"><strong>ส่งมอบไฟล์ความละเอียดสูง</strong><span>รับลิงก์ดาวน์โหลดพร้อมลงเว็บ OTA และโซเชียลภายใน 2–3 วัน</span></div></div>',
-    serviceAreaHtml: '<span>พื้นที่ให้บริการ:</span><span class="area-pill">ภูเก็ต</span><span class="area-pill">พังงา</span><span class="area-pill">กระบี่</span><span class="area-pill">ต่างจังหวัด (เดินทางได้)</span>',
-    copyBriefBtn: '📋 คัดลอกข้อความสอบถามด่วน (วางใน LINE / WhatsApp)',
-    copyBriefText: 'สวัสดีครับ สนใจจองคิวถ่ายภาพ/วิดีโอวิลล่า\n- ทำเลที่ตั้ง:\n- ขนาดบ้าน (จำนวนห้องนอน):\n- แพ็กเกจที่สนใจ:\n- วันที่สะดวก:',
-    copyBriefToast: 'คัดลอกข้อความสอบถามแล้ว นำไปวางใน LINE หรือ WhatsApp ได้เลย',
-    priceNote: '<strong>หมายเหตุ:</strong> ราคาจะขึ้นอยู่กับขนาดตัวบ้านและระยะทาง',
-    btnEmail: '✉ ส่งอีเมล', btnLine: '💬 แอดไลน์',
-    openSetText: 'เปิดดูทั้งเซ็ต →',
-    closeBtn: 'ปิด',
-    fabLocked: '*',
-    fabUnlocked: 'ปิดโหมด *',
-    footerSuffix: 'สงวนลิขสิทธิ์ภาพทั้งหมด'
-  },
-  en: {
-    pageTitle: 'Villa Photographer Portfolio',
-    navWork: 'Villa Sets', navService: 'Services', navContact: 'Contact',
-    heroCtaWork: 'Browse Villa Sets', heroCtaContact: 'Request a Quote',
-    workTitle: 'Villa Sets Portfolio',
-    workLead: 'Click any villa card to open its set viewer and swipe through angles of that property.',
-    cats: { 'ทั้งหมด':'All', 'กลางวัน':'Daylight', 'พลบค่ำ':'Twilight', 'ภายใน':'Interior' },
-    svcTitle: 'Photo & Video Packages',
-    svcLead: 'Choose a photo and video package tailored to your villa and campaign.',
-    svc1T: 'Villa Photography Package', svc1D: 'Full still photography of exterior, pool, garden, and interiors in daylight and twilight.',
-    svc2T: 'Villa Walkthrough Video', svc2D: 'Smooth storytelling walkthrough video ideal for social media and rental listings.',
-    svc3T: 'Photo + Video Full Set', svc3D: 'Complete photo and video coverage in one set with aerial angles for developers, agents, and resorts.',
-    ctTitle: 'Have a villa to shoot as a set?',
-    ctLead: 'Share your location, number of villas, preferred dates, and package for a prompt quote.',
-    bookingStepsHtml: '<div class="b-step"><span class="b-step-num">01</span><div class="b-step-txt"><strong>Share Villa Details</strong><span>Location, number of bedrooms, and preferred photo/video package</span></div></div>'
-      + '<div class="b-step"><span class="b-step-num">02</span><div class="b-step-txt"><strong>Quote &amp; Best Light Schedule</strong><span>Plan daylight and twilight shooting around the villa orientation</span></div></div>'
-      + '<div class="b-step"><span class="b-step-num">03</span><div class="b-step-txt"><strong>High-Res Delivery</strong><span>Cloud download link ready for OTA &amp; social media within 2–3 days</span></div></div>',
-    serviceAreaHtml: '<span>Service Areas:</span><span class="area-pill">Phuket</span><span class="area-pill">Phang Nga</span><span class="area-pill">Krabi</span><span class="area-pill">Nationwide Travel</span>',
-    copyBriefBtn: '📋 Copy Quick Inquiry Template (for LINE / WhatsApp)',
-    copyBriefText: 'Hello, I would like to inquire about a villa shoot:\n- Location:\n- Villa Size (Bedrooms):\n- Package:\n- Preferred Date:',
-    copyBriefToast: 'Inquiry template copied! Paste it into LINE or WhatsApp.',
-    priceNote: '<strong>Note:</strong> Pricing depends on house size and travel distance.',
-    btnEmail: '✉ Send Email', btnLine: '💬 Chat on LINE',
-    openSetText: 'Open Set →',
-    closeBtn: 'Close',
-    fabLocked: '*',
-    fabUnlocked: 'Exit *',
-    footerSuffix: 'All rights reserved.'
+// Theme toggle
+(function(){
+  var savedTheme = '';
+  try { savedTheme = localStorage.getItem('villa_theme_pref') || ''; } catch(e){}
+  if (savedTheme === 'light' || savedTheme === 'dark') {
+    document.documentElement.setAttribute('data-theme', savedTheme);
   }
-};
+  var btn = $('themeToggle');
+  if (btn) {
+    btn.addEventListener('click', function(){
+      var cur = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', cur);
+      try { localStorage.setItem('villa_theme_pref', cur); } catch(e){}
+    });
+  }
+})();
 
-// === SVG Architectural Villa Scene Generator ===
-var S=[
- {top:'#a9cde0',bot:'#f9dfc3',wall:'#f4efe6',win:'#d4e8ee',pool:'#67bfd2',sun:'#fff2c2',sy:330},
- {top:'#3b96c9',bot:'#c2e4f0',wall:'#fcfbf8',win:'#9bc8dc',pool:'#2ca9c4',sun:'#fffbe0',sy:90},
- {top:'#18233c',bot:'#e38667',wall:'#bead9d',win:'#ffce75',pool:'#245972',sun:'#ffd9a0',sy:300}
-];
-function h2r(h){return[1,3,5].map(function(i){return parseInt(h.substr(i,2),16)})}
-function mix(a,b,t){if(typeof a==='number')return a+(b-a)*t;var x=h2r(a),y=h2r(b);return'rgb('+x.map(function(v,i){return Math.round(v+(y[i]-v)*t)}).join(',')+')'}
-function pal(t){var i=t<.5?0:1,u=t<.5?t*2:(t-.5)*2,a=S[i],b=S[i+1],o={};for(var k in a)o[k]=mix(a[k],b[k],u);return o}
-var uid=0;
-function sceneSvg(t,flip){
- var p=pal(t),id='g'+(uid++);
- return '<svg viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="'+id+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+p.top+'"/><stop offset="1" stop-color="'+p.bot+'"/></linearGradient></defs>'
- +'<rect width="800" height="500" fill="url(#'+id+')"/><circle cx="'+(flip?180:620)+'" cy="'+p.sy+'" r="38" fill="'+p.sun+'" opacity=".92"/>'
- +'<path d="M0 340Q200 285 400 328T800 305V500H0Z" fill="#2c5855" opacity=".75"/>'
- +'<g transform="'+(flip?'translate(800 0) scale(-1 1)':'')+'"><rect y="385" width="800" height="115" fill="#cfc4ae"/>'
- +'<rect x="330" y="405" width="380" height="68" rx="6" fill="'+p.pool+'"/><rect x="350" y="420" width="140" height="4" rx="2" fill="#fff" opacity=".35"/><rect x="520" y="440" width="150" height="4" rx="2" fill="#fff" opacity=".25"/>'
- +'<rect x="120" y="250" width="300" height="135" fill="'+p.wall+'"/><rect x="200" y="190" width="240" height="62" fill="'+p.wall+'"/>'
- +'<rect x="100" y="240" width="340" height="11" fill="#22343a"/><rect x="190" y="181" width="260" height="10" fill="#22343a"/>'
- +'<rect x="140" y="276" width="110" height="88" fill="'+p.win+'"/><rect x="270" y="276" width="130" height="88" fill="'+p.win+'"/><rect x="225" y="205" width="190" height="38" fill="'+p.win+'"/>'
- +'<path d="M195 276v88M335 276v88M320 205v38" stroke="#22343a" stroke-width="3"/>'
- +'<path d="M560 385C556 330 566 290 580 262" stroke="#3a2f26" stroke-width="7" fill="none"/>'
- +'<g fill="#2f6b4d"><ellipse cx="580" cy="258" rx="50" ry="10" transform="rotate(-20 580 258)"/><ellipse cx="580" cy="258" rx="50" ry="10" transform="rotate(25 580 258)"/><ellipse cx="580" cy="258" rx="46" ry="9" transform="rotate(-60 580 258)"/><ellipse cx="580" cy="258" rx="46" ry="9" transform="rotate(65 580 258)"/></g></g></svg>';
+// Image compression helper for uploaded photos
+function compressPhoto(file, maxDim, cb){
+  var reader = new FileReader();
+  reader.onload = function(ev){
+    var img = new Image();
+    img.onload = function(){
+      var w = img.width, h = img.height;
+      var scale = Math.min(1, (maxDim || 1400) / Math.max(w, h || 1));
+      var cw = Math.max(1, Math.round(w * scale));
+      var ch = Math.max(1, Math.round(h * scale));
+      var canvas = document.createElement('canvas');
+      canvas.width = cw;
+      canvas.height = ch;
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, cw, ch);
+      try {
+        cb(canvas.toDataURL('image/jpeg', 0.84));
+      } catch(e){
+        cb(ev.target.result);
+      }
+    };
+    img.onerror = function(){ cb(ev.target.result); };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
 }
 
-function escAttr(s){ return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
-function getSetTitle(s){ return STATE.lang === 'en' ? (s.titleEn || s.titleTh) : (s.titleTh || s.titleEn); }
-function getSetSub(s){ return STATE.lang === 'en' ? (s.subEn || s.subTh) : (s.subTh || s.subEn); }
-function getItemLabel(it, idx, total){
-  var base = STATE.lang === 'en' ? (it.labelEn || it.labelTh) : (it.labelTh || it.labelEn);
-  return base || ((STATE.lang === 'en' ? 'Shot ' : 'ภาพที่ ') + (idx + 1) + '/' + total);
+// Villa SVG fallback illustration
+function villaSvg(t, f){
+  var light = Math.max(0, Math.min(1, Number(t) || 0.5));
+  var flip = f ? ' transform="translate(800,0) scale(-1,1)"' : '';
+  var skyTop = light < 0.3 ? '#1c2b3a' : (light < 0.65 ? '#5b8fb9' : '#73a6cf');
+  var skyBot = light < 0.3 ? '#46372c' : (light < 0.65 ? '#d9b589' : '#c8dde8');
+  var hillColor = light < 0.3 ? '#1a2528' : '#4a645d';
+  var wallColor = light < 0.3 ? '#2c3035' : '#e6e2d8';
+  var roofColor = light < 0.3 ? '#181b1e' : '#3a3f44';
+  var glassColor = light < 0.3 ? '#f4c77b' : '#8cb3c9';
+  var poolColor = light < 0.3 ? '#1d5b73' : '#3898b3';
+  var sunY = light < 0.3 ? 170 : 115;
+  var sunFill = light < 0.3 ? '#f2b866' : '#f2ebd9';
+  return '<svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ภาพวิลล่า">'
+    + '<defs><linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">'
+    + '<stop offset="0%" stop-color="' + skyTop + '"/><stop offset="100%" stop-color="' + skyBot + '"/>'
+    + '</linearGradient></defs>'
+    + '<g' + flip + '>'
+    + '<rect width="800" height="500" fill="url(#skyGrad)"/>'
+    + '<circle cx="510" cy="' + sunY + '" r="38" fill="' + sunFill + '" opacity="0.85"/>'
+    + '<path d="M0 310 Q210 250 430 300 T800 280 L800 500 L0 500 Z" fill="' + hillColor + '"/>'
+    + '<rect x="0" y="312" width="800" height="188" fill="#c7b89e" opacity="' + (light < 0.3 ? '0.35' : '0.88') + '"/>'
+    + '<rect x="250" y="185" width="170" height="128" fill="' + wallColor + '"/>'
+    + '<rect x="235" y="173" width="200" height="14" fill="' + roofColor + '"/>'
+    + '<rect x="272" y="198" width="54" height="36" fill="' + glassColor + '"/>'
+    + '<rect x="336" y="198" width="54" height="36" fill="' + glassColor + '"/>'
+    + '<rect x="210" y="238" width="205" height="75" fill="' + wallColor + '"/>'
+    + '<rect x="195" y="226" width="235" height="14" fill="' + roofColor + '"/>'
+    + '<rect x="228" y="252" width="68" height="48" fill="' + glassColor + '"/>'
+    + '<rect x="312" y="252" width="76" height="48" fill="' + glassColor + '"/>'
+    + '<path d="M510 315 Q518 250 532 208" stroke="#5b4636" stroke-width="7" fill="none"/>'
+    + '<ellipse cx="532" cy="204" rx="34" ry="11" transform="rotate(-18 532 204)" fill="#4d6b53"/>'
+    + '<ellipse cx="532" cy="204" rx="34" ry="11" transform="rotate(24 532 204)" fill="#3e5944"/>'
+    + '<rect x="362" y="325" width="188" height="48" rx="6" fill="' + poolColor + '"/>'
+    + '<line x1="382" y1="340" x2="455" y2="340" stroke="#ffffff" stroke-width="2" opacity="0.45"/>'
+    + '<line x1="450" y1="356" x2="530" y2="356" stroke="#ffffff" stroke-width="2" opacity="0.45"/>'
+    + '</g></svg>';
 }
 
-function parseVideoEmbed(url){
-  if (!url) return null;
-  var yt = url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/);
-  if (yt) return { kind:'iframe', src:'https://www.youtube-nocookie.com/embed/'+yt[1]+'?autoplay=1', thumb:'https://img.youtube.com/vi/'+yt[1]+'/hqdefault.jpg' };
+function getEmbedUrl(url){
+  if (!url) return '';
+  var yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([A-Za-z0-9_-]{6,})/);
+  if (yt) return 'https://www.youtube.com/embed/' + yt[1];
   var vm = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
-  if (vm) return { kind:'iframe', src:'https://player.vimeo.com/video/'+vm[1]+'?autoplay=1', thumb:'' };
-  return { kind:'video', src:url, thumb:'' };
+  if (vm) return 'https://player.vimeo.com/video/' + vm[1];
+  return '';
 }
 
 function renderItemThumb(it, altText){
-  if (!it) return sceneSvg(.5, 0);
-  if (it.kind === 'image' && it.src) return '<img src="'+escAttr(it.src)+'" alt="'+escAttr(altText||'')+'" loading="lazy">';
-  if (it.kind === 'video-file' && it.src) return '<video src="'+escAttr(it.src)+'" muted playsinline preload="metadata"></video>';
-  if (it.kind === 'video-url') {
-    var em = parseVideoEmbed(it.src);
-    if (em && em.thumb) return '<img src="'+escAttr(em.thumb)+'" alt="'+escAttr(altText||'')+'" loading="lazy">';
-    return sceneSvg(it.t != null ? it.t : .5, it.f || 0);
+  if (!it) return villaSvg(0.5, 0);
+  if (it.kind === 'image' && it.src) {
+    return '<img src="' + escAttr(it.src) + '" alt="' + escAttr(altText || '') + '" loading="lazy">';
   }
-  return sceneSvg(it.t != null ? it.t : .5, it.f || 0);
+  if (it.kind === 'video-file' && it.src) {
+    return '<video src="' + escAttr(it.src) + '" muted playsinline preload="metadata"></video>';
+  }
+  if (it.kind === 'video-url') {
+    return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#141a1f;color:#c8a472;font-size:12px">▶ VIDEO</div>';
+  }
+  return villaSvg(it.t != null ? it.t : 0.5, it.f || 0);
 }
 
 function renderItemFull(it, altText){
-  if (!it) return sceneSvg(.5, 0);
-  if (it.kind === 'image' && it.src) return '<img src="'+escAttr(it.src)+'" alt="'+escAttr(altText||'')+'">';
-  if (it.kind === 'video-file' && it.src) return '<video src="'+escAttr(it.src)+'" controls autoplay playsinline style="background:#000"></video>';
-  if (it.kind === 'video-url') {
-    var em = parseVideoEmbed(it.src);
-    if (em && em.kind === 'iframe') return '<iframe src="'+escAttr(em.src)+'" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>';
-    return '<video src="'+escAttr(it.src||'')+'" controls autoplay playsinline style="background:#000"></video>';
+  if (!it) return villaSvg(0.5, 0);
+  if (it.kind === 'image' && it.src) {
+    return '<img src="' + escAttr(it.src) + '" alt="' + escAttr(altText || '') + '">';
   }
-  return sceneSvg(it.t != null ? it.t : .5, it.f || 0);
+  if (it.kind === 'video-file' && it.src) {
+    return '<video src="' + escAttr(it.src) + '" controls playsinline style="width:100%;height:100%;object-fit:contain"></video>';
+  }
+  if (it.kind === 'video-url') {
+    var emb = getEmbedUrl(it.src);
+    if (emb) {
+      return '<iframe src="' + escAttr(emb) + '" allow="autoplay; fullscreen" allowfullscreen style="width:100%;height:100%;border:0"></iframe>';
+    }
+    return '<video src="' + escAttr(it.src || '') + '" controls playsinline style="width:100%;height:100%;object-fit:contain"></video>';
+  }
+  return villaSvg(it.t != null ? it.t : 0.5, it.f || 0);
 }
 
-// === Theme Toggle ===
-$('themeToggle').addEventListener('click', function(){
-  var root = document.documentElement;
-  root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
-});
+function getSetTitle(s){
+  return STATE.lang === 'en' ? (s.titleEn || s.titleTh || '') : (s.titleTh || s.titleEn || '');
+}
+function getSetSub(s){
+  return STATE.lang === 'en' ? (s.subEn || s.subTh || '') : (s.subTh || s.subEn || '');
+}
+function getItemLabel(it, idx, total){
+  var raw = STATE.lang === 'en' ? (it.labelEn || it.labelTh || '') : (it.labelTh || it.labelEn || '');
+  return raw || ((idx + 1) + ' / ' + total);
+}
 
-// === Hero Auto-Sliding Showcase ===
-var autoIdx = 0;
+// === Auto-Sliding Hero Stage (Still Images & SVG Only, No Videos) ===
+var autoSlideIdx = 0;
 var autoPlaying = true;
 var autoTimer = null;
+var lastAutoSlidesKey = '';
 
 function getAutoSlides(){
-  var pool = [];
-  (STATE.sets || []).forEach(function(s){
-    (s.items || []).forEach(function(it){
-      pool.push({
-        titleTh: it.labelTh || s.titleTh || 'ผลงานวิลล่า',
-        titleEn: it.labelEn || s.titleEn || 'Villa Sample',
-        item: it
+  var slides = [];
+  STATE.sets.forEach(function(s){
+    if (!Array.isArray(s.items)) return;
+    s.items.forEach(function(it, idx){
+      if (!it || (it.kind !== 'image' && it.kind !== 'svg')) return;
+      if (it.kind === 'image' && !it.src) return;
+      slides.push({
+        setTitle: (s.code ? s.code + ' · ' : '') + getSetTitle(s),
+        label: getItemLabel(it, idx, s.items.length),
+        html: renderItemThumb(it, getSetTitle(s))
       });
     });
   });
-  return pool.slice(0, 6);
+  return slides;
 }
 
-function renderAutoSlider(){
-  var stageEl = $('stage');
-  if (!stageEl) return;
-  var slides = getAutoSlides();
-  if (!slides.length) return;
-  if (autoIdx >= slides.length) autoIdx = 0;
-  if (autoIdx < 0) autoIdx = slides.length - 1;
-  var isEn = STATE.lang === 'en';
-  var track = stageEl.querySelector('.auto-slides-track');
-
-  if (!track) {
-    var slidesHtml = slides.map(function(sl){
-      var title = isEn ? sl.titleEn : sl.titleTh;
-      return '<div class="auto-slide">' + renderItemFull(sl.item, title) + '</div>';
-    }).join('');
-    stageEl.innerHTML = '<div class="auto-slider-wrap">'
-      + '<div class="auto-slides-track" style="transform:translateX(-' + (autoIdx * 100) + '%)">' + slidesHtml + '</div>'
-      + '</div>';
-  } else {
-    track.style.transform = 'translateX(-' + (autoIdx * 100) + '%)';
-  }
-
+function renderAutoSlider(forceReset){
+  var stage = $('stage');
   var dotsEl = $('autoDots');
-  if (dotsEl) {
-    dotsEl.innerHTML = slides.map(function(_, i){
-      var active = i === autoIdx;
-      return '<button type="button" class="auto-dot' + (active ? ' active' : '') + '" data-auto-i="' + i + '" aria-label="ภาพตัวอย่างที่ ' + (i + 1) + '"></button>';
-    }).join('');
+  if (!stage || !dotsEl) return;
+  var slides = getAutoSlides();
+  if (!slides.length) {
+    stage.innerHTML = '<div class="auto-slider-wrap"><div class="auto-slides-track"><div class="auto-slide">' + villaSvg(0.55, 0) + '</div></div></div>';
+    dotsEl.innerHTML = '';
+    return;
   }
+  var key = slides.map(function(sl){ return sl.setTitle + '|' + sl.label; }).join('||');
+  if (forceReset || key !== lastAutoSlidesKey || !stage.querySelector('.auto-slides-track')) {
+    lastAutoSlidesKey = key;
+    if (autoSlideIdx >= slides.length) autoSlideIdx = 0;
+    stage.innerHTML = '<div class="auto-slider-wrap"><div class="auto-slides-track" id="autoSlidesTrack">'
+      + slides.map(function(sl){ return '<div class="auto-slide">' + sl.html + '</div>'; }).join('')
+      + '</div></div>';
+  }
+  if (autoSlideIdx >= slides.length) autoSlideIdx = 0;
+  var track = $('autoSlidesTrack');
+  if (track) track.style.transform = 'translate3d(-' + (autoSlideIdx * 100) + '%, 0, 0)';
+  dotsEl.innerHTML = slides.map(function(_, i){
+    return '<button type="button" class="auto-dot' + (i === autoSlideIdx ? ' active' : '') + '" data-slide-dot="' + i + '" aria-label="สไลด์ที่ ' + (i + 1) + '"></button>';
+  }).join('');
 }
 
 function goAutoSlide(nextIdx){
   var slides = getAutoSlides();
   if (!slides.length) return;
-  autoIdx = ((nextIdx % slides.length) + slides.length) % slides.length;
-  renderAutoSlider();
+  autoSlideIdx = ((nextIdx % slides.length) + slides.length) % slides.length;
+  renderAutoSlider(false);
 }
 
 function restartAutoTimer(){
   clearInterval(autoTimer);
-  if (autoPlaying) {
-    autoTimer = setInterval(function(){ goAutoSlide(autoIdx + 1); }, 4200);
+  var btn = $('btnToggleAuto');
+  if (btn) {
+    btn.textContent = autoPlaying
+      ? (STATE.lang === 'en' ? '⏸ Pause' : '⏸ หยุดชั่วคราว')
+      : (STATE.lang === 'en' ? '▶ Play' : '▶ เล่นต่อ');
   }
+  if (!autoPlaying) return;
+  autoTimer = setInterval(function(){ goAutoSlide(autoSlideIdx + 1); }, 3600);
 }
 
-$('btnPrevAuto').addEventListener('click', function(){ goAutoSlide(autoIdx - 1); restartAutoTimer(); });
-$('btnNextAuto').addEventListener('click', function(){ goAutoSlide(autoIdx + 1); restartAutoTimer(); });
-$('btnToggleAuto').addEventListener('click', function(){
-  autoPlaying = !autoPlaying;
-  this.textContent = autoPlaying ? '⏸ หยุดชั่วคราว' : '▶ เล่นต่อ';
-  restartAutoTimer();
-});
-$('autoDots').addEventListener('click', function(e){
-  var btn = e.target.closest('[data-auto-i]');
-  if (!btn) return;
-  goAutoSlide(+btn.dataset.autoI);
+if ($('btnPrevAuto')) $('btnPrevAuto').addEventListener('click', function(){ goAutoSlide(autoSlideIdx - 1); restartAutoTimer(); });
+if ($('btnNextAuto')) $('btnNextAuto').addEventListener('click', function(){ goAutoSlide(autoSlideIdx + 1); restartAutoTimer(); });
+if ($('btnToggleAuto')) $('btnToggleAuto').addEventListener('click', function(){ autoPlaying = !autoPlaying; restartAutoTimer(); });
+if ($('autoDots')) $('autoDots').addEventListener('click', function(e){
+  var dot = e.target.closest('[data-slide-dot]');
+  if (!dot) return;
+  goAutoSlide(+dot.dataset.slideDot);
   restartAutoTimer();
 });
 
-// === Interactive 3D Business Card (Front & Back) ===
-var tm = $('time');
-var cardDragStartX = null;
-var cardDragStartVal = 0;
+// === 3D Flip Business Card ===
+var cardAngle = 0;
+var cardDragging = false;
+var cardDragStartX = 0;
+var cardDragStartAngle = 0;
 var cardMoved = false;
-var cardSnapRaf = null;
 
-function timeLabel(v){
-  var isEn = STATE.lang === 'en';
-  var sideText = v >= 50 ? (isEn ? 'Back' : 'ด้านหลัง') : (isEn ? 'Front' : 'ด้านหน้า');
-  return sideText + ' · ' + Math.round(v) + '%';
-}
-
-function buildCardFacesHtml(){
-  var brand = STATE.lang === 'en' ? (STATE.site.brandEn || 'Inthat · Villa Photographer') : (STATE.site.brandTh || 'อินทัช · ช่างภาพวิลล่า');
-  var frontHtml = (STATE.site && STATE.site.heroCardImg)
-    ? '<img src="' + escAttr(STATE.site.heroCardImg) + '" alt="นามบัตรด้านหน้า">'
-    : '<div class="card-default-art">'
-        + '<span class="card-badge-pill">FRONT</span>'
-        + '<div>'
-        +   '<div class="card-art-title">' + escAttr(brand) + '</div>'
-        +   '<div class="card-art-sub">Villa · Exterior · Interior · Drone</div>'
-        + '</div>'
-        + '<div class="card-art-foot"><span>' + escAttr(STATE.site.email || 'hello@example.com') + '</span><span>PHUKET</span></div>'
-      + '</div>';
-
-  var backHtml = (STATE.site && STATE.site.heroCardBackImg)
-    ? '<img src="' + escAttr(STATE.site.heroCardBackImg) + '" alt="นามบัตรด้านหลัง">'
-    : '<div class="card-default-art back-art">'
-        + '<span class="card-badge-pill">BACK</span>'
-        + '<div>'
-        +   '<div class="card-art-title">Photo · Video · Aerial</div>'
-        +   '<div class="card-art-sub">Organized per villa set</div>'
-        + '</div>'
-        + '<div class="card-art-foot"><span>+66 80 519 5750</span><span>LINE</span></div>'
-      + '</div>';
-
-  return '<div class="card-flip-scene" id="cardFlipScene">'
-    + '<div class="card-3d" id="card3d">'
-    +   '<div class="card-face front" id="cardFrontFace">' + frontHtml + '</div>'
-    +   '<div class="card-face back" id="cardBackFace">' + backHtml + '</div>'
-    + '</div>'
-    + '</div>';
-}
-
-function applyCardRotation(){
-  var v = tm ? (+tm.value || 0) : 0;
-  var cardEl = $('card3d');
-  if (cardEl) {
-    var deg = (v / 100) * 180;
-    var lift = Math.sin((v / 100) * Math.PI) * 18;
-    cardEl.style.transform = 'translateZ(' + lift.toFixed(1) + 'px) rotateY(' + deg.toFixed(2) + 'deg)';
+function setCardFlipAngle(deg, immediate){
+  cardAngle = Math.max(0, Math.min(180, Number(deg) || 0));
+  var el = document.getElementById('card3d');
+  var lbEl = document.getElementById('card3dLightbox');
+  var range = $('time');
+  var out = $('tl');
+  var lbRange = $('cardLightboxRange');
+  var lbOut = $('cardLightboxOut');
+  var transformVal = 'rotateY(' + cardAngle.toFixed(1) + 'deg)';
+  if (el) {
+    el.classList.toggle('dragging', !!immediate);
+    el.style.transform = transformVal;
   }
-  if ($('tl')) $('tl').textContent = timeLabel(v);
-}
-
-function animateCardTo(targetVal){
-  if (cardSnapRaf) cancelAnimationFrame(cardSnapRaf);
-  var cardEl = $('card3d');
-  if (cardEl) cardEl.classList.remove('dragging');
-  var startVal = tm ? (+tm.value || 0) : 0;
-  var diff = targetVal - startVal;
-  if (Math.abs(diff) < 0.5) {
-    if (tm) tm.value = String(targetVal);
-    applyCardRotation();
-    return;
+  if (lbEl) {
+    lbEl.classList.toggle('dragging', !!immediate);
+    lbEl.style.transform = transformVal;
   }
-  var startTime = performance.now();
-  var duration = 520;
-  function step(now){
-    var p = Math.min(1, (now - startTime) / duration);
-    var ease = 1 - Math.pow(1 - p, 4);
-    var cur = startVal + diff * ease;
-    if (tm) tm.value = String(Math.round(cur));
-    applyCardRotation();
-    if (p < 1) {
-      cardSnapRaf = requestAnimationFrame(step);
-    } else {
-      if (tm) tm.value = String(targetVal);
-      applyCardRotation();
-      cardSnapRaf = null;
-    }
-  }
-  cardSnapRaf = requestAnimationFrame(step);
-}
-
-function bindCardSceneEvents(){
-  var scene = $('cardFlipScene');
-  if (!scene) return;
-  scene.addEventListener('pointerdown', function(e){
-    if (cardSnapRaf) cancelAnimationFrame(cardSnapRaf);
-    cardDragStartX = e.clientX;
-    cardDragStartVal = tm ? (+tm.value || 0) : 0;
-    cardMoved = false;
-    var cardEl = $('card3d');
-    if (cardEl) cardEl.classList.add('dragging');
-    scene.setPointerCapture(e.pointerId);
-  });
-  scene.addEventListener('pointermove', function(e){
-    if (cardDragStartX === null) return;
-    var dx = e.clientX - cardDragStartX;
-    if (Math.abs(dx) > 5) cardMoved = true;
-    var nextVal = Math.max(0, Math.min(100, cardDragStartVal + (dx / 180) * 100));
-    if (tm) tm.value = String(Math.round(nextVal));
-    applyCardRotation();
-  });
-  function endDrag(){
-    if (cardDragStartX === null) return;
-    cardDragStartX = null;
-    var cur = tm ? (+tm.value || 0) : 0;
-    if (!cardMoved) {
-      animateCardTo(cur < 50 ? 100 : 0);
-    } else {
-      animateCardTo(cur >= 50 ? 100 : 0);
-    }
-  }
-  scene.addEventListener('pointerup', endDrag);
-  scene.addEventListener('pointercancel', endDrag);
+  var pct = Math.round((cardAngle / 180) * 100);
+  var sideLabel = cardAngle >= 90
+    ? (STATE.lang === 'en' ? 'Back' : 'ด้านหลัง')
+    : (STATE.lang === 'en' ? 'Front' : 'ด้านหน้า');
+  if (range) range.value = String(pct);
+  if (out) out.textContent = sideLabel + ' · ' + pct + '%';
+  if (lbRange) lbRange.value = String(pct);
+  if (lbOut) lbOut.textContent = sideLabel + ' · ' + pct + '%';
 }
 
 function renderBusinessCard(){
-  var hasAny = !!((STATE.site && STATE.site.heroCardImg) || (STATE.site && STATE.site.heroCardBackImg));
+  var dockStage = $('dockStage');
+  var lbStage = $('cardLightboxStage');
+  if (!dockStage) return;
+  var brand = STATE.lang === 'en' ? (STATE.site.brandEn || 'Inthat · Villa Photographer') : (STATE.site.brandTh || 'อินทัช · ช่างภาพวิลล่า');
+  var frontContent = STATE.site.heroCardImg
+    ? '<img src="' + escAttr(STATE.site.heroCardImg) + '" alt="' + escAttr(brand) + '">'
+    : '<div class="card-default-art">'
+      + '<span class="card-badge-pill">VILLA PHOTOGRAPHY</span>'
+      + '<div><div class="card-art-title">' + escAttr(brand) + '</div>'
+      + '<div class="card-art-sub">Architectural · Pool Villa · Walkthrough &amp; Aerial</div></div>'
+      + '<div class="card-art-foot"><span>Phuket · Phang Nga · Krabi</span><span>PIN: 2538</span></div>'
+      + '</div>';
+  var backContent = STATE.site.heroCardBackImg
+    ? '<img src="' + escAttr(STATE.site.heroCardBackImg) + '" alt="' + escAttr(brand + ' Back') + '">'
+    : '<div class="card-default-art back-art">'
+      + '<span class="card-badge-pill">BOOKING &amp; CONTACT</span>'
+      + '<div><div class="card-art-title">' + escAttr(STATE.site.email || 'hello@example.com') + '</div>'
+      + '<div class="card-art-sub">Daylight · Twilight · Interior · Walkthrough Video</div></div>'
+      + '<div class="card-art-foot"><span>Tel: +66805195750</span><span>LINE / WhatsApp</span></div>'
+      + '</div>';
+
+  dockStage.innerHTML = '<div class="card-flip-scene"><div class="card-3d" id="card3d">'
+    + '<div class="card-face front">' + frontContent + '</div>'
+    + '<div class="card-face back">' + backContent + '</div>'
+    + '</div></div>';
+
+  if (lbStage) {
+    lbStage.innerHTML = '<div class="card-flip-scene"><div class="card-3d" id="card3dLightbox">'
+      + '<div class="card-face front">' + frontContent + '</div>'
+      + '<div class="card-face back">' + backContent + '</div>'
+      + '</div></div>';
+  }
+  if ($('cardLightboxTitle')) $('cardLightboxTitle').textContent = brand;
+
+  setCardFlipAngle(cardAngle, true);
   if ($('btnClearShowcaseImg')) {
-    $('btnClearShowcaseImg').style.display = (ownerUnlocked && hasAny) ? 'inline-flex' : 'none';
+    $('btnClearShowcaseImg').style.display = (STATE.site.heroCardImg || STATE.site.heroCardBackImg) ? 'inline-flex' : 'none';
   }
-  if ($('dockStage')) {
-    $('dockStage').innerHTML = buildCardFacesHtml();
-    bindCardSceneEvents();
-  }
-  applyCardRotation();
-}
-if (tm) {
-  tm.addEventListener('input', function(){
-    if (cardSnapRaf) cancelAnimationFrame(cardSnapRaf);
-    var cardEl = $('card3d');
-    if (cardEl) cardEl.classList.add('dragging');
-    applyCardRotation();
-  });
-  tm.addEventListener('change', function(){
-    var cur = +tm.value || 0;
-    animateCardTo(cur >= 50 ? 100 : 0);
-  });
 }
 
-// === Watermark Stamping for Uploaded Photos ===
-function stampWatermarkOnCanvas(ctx, w, h){
-  var wmText = (STATE && STATE.watermarkText) || 'InthatPhotographer';
-  ctx.save();
-  var fontSize = Math.max(14, Math.round(Math.min(w, h) * 0.03));
-  ctx.font = '500 ' + fontSize + 'px "Prompt", sans-serif';
-  ctx.textAlign = 'right';
-  ctx.textBaseline = 'bottom';
-  var padX = Math.max(12, Math.round(w * 0.022));
-  var padY = Math.max(10, Math.round(h * 0.02));
-  ctx.shadowColor = 'rgba(0, 0, 0, 0.38)';
-  ctx.shadowBlur = Math.max(3, Math.round(fontSize * 0.22));
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.44)';
-  ctx.fillText('© ' + wmText, w - padX, h - padY);
-  ctx.restore();
+function openCardLightbox(){
+  var lb = $('cardLightbox');
+  if (!lb) return;
+  lb.classList.add('open');
+  setCardFlipAngle(cardAngle, true);
 }
 
-function compressPhoto(file, maxW, cb){
-  var r = new FileReader();
-  r.onload = function(){
-    var img = new Image();
-    img.onload = function(){
-      var w = img.width || 1200, h = img.height || 800, lim = maxW || 1200;
-      if (w > lim){ h = Math.round(h * lim / w); w = lim; }
-      var c = document.createElement('canvas'); c.width = w; c.height = h;
-      var ctx = c.getContext('2d');
-      ctx.drawImage(img, 0, 0, w, h);
-      stampWatermarkOnCanvas(ctx, w, h);
-      try { cb(c.toDataURL('image/jpeg', 0.82)); } catch(e){ cb(r.result); }
-    };
-    img.src = r.result;
-  };
-  r.readAsDataURL(file);
+function closeCardLightbox(){
+  var lb = $('cardLightbox');
+  if (!lb) return;
+  lb.classList.remove('open');
 }
+
+(function bindCardInteractions(){
+  var stage = $('dockStage');
+  var lbStage = $('cardLightboxStage');
+  var range = $('time');
+  var lbRange = $('cardLightboxRange');
+
+  function bindRange(el){
+    if (!el) return;
+    el.addEventListener('input', function(){
+      setCardFlipAngle((Number(this.value) / 100) * 180, true);
+    });
+    el.addEventListener('change', function(){
+      var pct = Number(this.value);
+      setCardFlipAngle(pct >= 50 ? 180 : 0, false);
+    });
+  }
+  bindRange(range);
+  bindRange(lbRange);
+
+  function bindStageDrag(targetStage, isLightbox){
+    if (!targetStage) return;
+    targetStage.addEventListener('pointerdown', function(e){
+      cardDragging = true;
+      cardMoved = false;
+      cardDragStartX = e.clientX;
+      cardDragStartAngle = cardAngle;
+      var activeCardId = isLightbox ? 'card3dLightbox' : 'card3d';
+      var el = document.getElementById(activeCardId);
+      if (el) el.classList.add('dragging');
+    });
+    targetStage.addEventListener('pointerup', function(){
+      if (!cardDragging) return;
+      cardDragging = false;
+      if (!cardMoved) {
+        if (!isLightbox) {
+          openCardLightbox();
+        } else {
+          setCardFlipAngle(cardAngle >= 90 ? 0 : 180, false);
+        }
+      } else {
+        setCardFlipAngle(cardAngle >= 90 ? 180 : 0, false);
+      }
+    });
+  }
+
+  bindStageDrag(stage, false);
+  bindStageDrag(lbStage, true);
+
+  window.addEventListener('pointermove', function(e){
+    if (!cardDragging) return;
+    var dx = e.clientX - cardDragStartX;
+    if (Math.abs(dx) > 6) cardMoved = true;
+    var activeStage = ($('cardLightbox') && $('cardLightbox').classList.contains('open')) ? lbStage : stage;
+    var widthRef = activeStage ? Math.max(200, activeStage.clientWidth || 320) : 320;
+    var deltaDeg = (dx / widthRef) * 180;
+    setCardFlipAngle(cardDragStartAngle + deltaDeg, true);
+  });
+
+  window.addEventListener('pointerup', function(){
+    if (!cardDragging) return;
+    cardDragging = false;
+    setCardFlipAngle(cardAngle >= 90 ? 180 : 0, false);
+  });
+
+  if ($('cardLightboxClose')) $('cardLightboxClose').addEventListener('click', closeCardLightbox);
+  if ($('cardLightbox')) {
+    $('cardLightbox').addEventListener('click', function(e){
+      if (e.target === $('cardLightbox')) closeCardLightbox();
+    });
+  }
+  if ($('cardFlipFrontBtn')) $('cardFlipFrontBtn').addEventListener('click', function(){ setCardFlipAngle(0, false); });
+  if ($('cardFlipBackBtn')) $('cardFlipBackBtn').addEventListener('click', function(){ setCardFlipAngle(180, false); });
+})();
 
 // === Filter & Villa Sets Grid ===
-var activeCat = 'ทั้งหมด';
-var CATS = ['ทั้งหมด', 'กลางวัน', 'พลบค่ำ', 'ภายใน'];
+var filtersEl = $('filters');
+var gridEl = $('grid');
 
 function renderFilters(){
+  if (!filtersEl) return;
   var d = I18N[STATE.lang] || I18N.th;
-  $('filters').innerHTML = CATS.map(function(c){
-    return '<button type="button" aria-pressed="' + (c === activeCat) + '" data-cat="' + c + '">' + (d.cats[c] || c) + '</button>';
+  var cats = ['ทั้งหมด', 'กลางวัน', 'พลบค่ำ', 'ภายใน'];
+  filtersEl.innerHTML = cats.map(function(c){
+    var pressed = c === activeCat;
+    var label = (d.cats && d.cats[c]) || c;
+    return '<button type="button" data-cat="' + escAttr(c) + '" aria-pressed="' + String(pressed) + '">' + escAttr(label) + '</button>';
   }).join('');
 }
 
-$('filters').addEventListener('click', function(e){
-  var b = e.target.closest('button'); if (!b) return;
-  activeCat = b.dataset.cat;
-  renderFilters();
-  renderGrid();
-});
+if (filtersEl) {
+  filtersEl.addEventListener('click', function(e){
+    var btn = e.target.closest('button[data-cat]');
+    if (!btn) return;
+    activeCat = btn.dataset.cat;
+    renderFilters();
+    renderGrid();
+  });
+}
 
 function renderGrid(){
+  if (!gridEl) return;
   var d = I18N[STATE.lang] || I18N.th;
-  var list = activeCat === 'ทั้งหมด' ? STATE.sets : STATE.sets.filter(function(s){ return s.c === activeCat; });
-  $('grid').innerHTML = list.map(function(s){
-    var realIdx = STATE.sets.findIndex(function(x){ return x.id === s.id; });
-    var coverItem = (s.items && s.items[s.coverIdx]) || (s.items && s.items[0]) || null;
+  var list = STATE.sets.map(function(s, idx){ return { set: s, idx: idx }; })
+    .filter(function(entry){ return activeCat === 'ทั้งหมด' || entry.set.c === activeCat; });
+
+  gridEl.innerHTML = list.map(function(entry){
+    var s = entry.set;
+    var idx = entry.idx;
+    var items = Array.isArray(s.items) && s.items.length ? s.items : [{ kind:'svg', t:.5, f:0 }];
+    var cov = items[s.coverIdx || 0] || items[0];
     var title = getSetTitle(s);
-    var sub = getSetSub(s);
-    var countText = (s.items ? s.items.length : 1) + (STATE.lang === 'en' ? ' shots' : ' รูป');
+    var catLabel = (d.cats && d.cats[s.c]) || s.c;
     return '<div class="tile-wrap">'
-      + '<button type="button" class="tile" data-set-idx="' + realIdx + '">'
-      +   '<div class="img">'
-      +     renderItemThumb(coverItem, title)
-      +     '<span class="set-code-badge">' + escAttr(s.code || '') + '</span>'
-      +     '<span class="set-count-badge">' + escAttr(countText) + '</span>'
-      +   '</div>'
-      +   '<div class="tile-body">'
-      +     '<div class="tile-top-meta">' + escAttr(s.loc || (d.cats[s.c] || s.c)) + '</div>'
-      +     '<strong>' + escAttr(title) + '</strong>'
-      +     '<div class="tile-bottom">'
-      +       '<span class="meta">' + escAttr(sub) + '</span>'
-      +       '<span class="tile-cta">' + d.openSetText + '</span>'
-      +     '</div>'
-      +   '</div>'
-      + '</button>'
-      + '<div class="tile-admin-tools">'
-      +   '<button type="button" data-act="edit-set" data-set-idx="' + realIdx + '">✎ แก้ไขเซ็ต / เพิ่มรูป</button>'
-      +   '<button type="button" class="del" data-act="del-set" data-set-idx="' + realIdx + '">✕ ลบเซ็ต</button>'
+      + '<button type="button" class="tile" data-open-set="' + idx + '">'
+      + '<div class="img">' + renderItemThumb(cov, title)
+      + (s.code ? '<span class="set-code-badge">' + escAttr(s.code) + '</span>' : '')
+      + '<span class="set-count-badge">' + items.length + ' ' + escAttr(d.photoCountUnit) + '</span>'
       + '</div>'
-      + '</div>';
+      + '<div class="tile-body">'
+      + '<div class="tile-top-meta">' + escAttr(s.loc || '') + (s.loc && catLabel ? ' · ' : '') + escAttr(catLabel || '') + '</div>'
+      + '<strong>' + escAttr(title) + '</strong>'
+      + '<div class="tile-bottom"><span class="meta">' + escAttr(getSetSub(s)) + '</span><span class="tile-cta">' + escAttr(d.viewSetCta) + '</span></div>'
+      + '</div></button>'
+      + '<div class="tile-admin-tools">'
+      + '<button type="button" data-edit-set="' + idx + '">✎ แก้ไขเซ็ต</button>'
+      + '<button type="button" class="del" data-del-set="' + idx + '">✕ ลบเซ็ต</button>'
+      + '</div></div>';
   }).join('');
 }
 
-$('grid').addEventListener('click', function(e){
-  var admBtn = e.target.closest('.tile-admin-tools button');
-  if (admBtn) {
-    var sIdx = +admBtn.dataset.setIdx;
-    if (!ownerUnlocked) { openPinModal(function(){ handleSetAdminAction(admBtn.dataset.act, sIdx); }); return; }
-    handleSetAdminAction(admBtn.dataset.act, sIdx);
-    return;
-  }
-  var tile = e.target.closest('.tile');
-  if (!tile) return;
-  openSetViewer(+tile.dataset.setIdx, 0);
-});
-
-function handleSetAdminAction(act, sIdx){
-  var s = STATE.sets[sIdx];
-  if (!s) return;
-  if (act === 'edit-set') { openSetModal(sIdx); return; }
-  if (act === 'del-set') {
-    if (STATE.sets.length <= 1) { showToast('ต้องมีเซ็ตวิลล่าอย่างน้อย 1 เซ็ต'); return; }
-    STATE.sets.splice(sIdx, 1);
-    saveState();
-    renderGrid();
-    renderAutoSlider();
-    showToast('ลบเซ็ตวิลล่าแล้ว');
-  }
+if (gridEl) {
+  gridEl.addEventListener('click', function(e){
+    var editBtn = e.target.closest('[data-edit-set]');
+    if (editBtn) { openSetModal(+editBtn.dataset.editSet); return; }
+    var delBtn = e.target.closest('[data-del-set]');
+    if (delBtn) {
+      var dIdx = +delBtn.dataset.delSet;
+      if (STATE.sets.length <= 1) { showToast('ต้องมีเซ็ตวิลล่าอย่างน้อย 1 เซ็ต'); return; }
+      STATE.sets.splice(dIdx, 1);
+      saveState();
+      renderGrid();
+      renderAutoSlider(true);
+      showToast('ลบเซ็ตวิลล่าแล้ว');
+      return;
+    }
+    var cardBtn = e.target.closest('[data-open-set]');
+    if (cardBtn) { openSetViewer(+cardBtn.dataset.openSet, 0); }
+  });
 }
 
-// === Set Slideshow Lightbox ===
-var dlg = $('setViewerDlg'), vStage = $('vStage');
-var vCounter = $('vCounter'), vThumbs = $('vThumbs');
-var currentSetIdx = 0, currentItemIdx = 0;
+// === Set Slideshow Lightbox Dialog ===
+var dlg = $('setViewerDlg');
+var vStage = $('vStage');
+var vThumbs = $('vThumbs');
+var vCounter = $('vCounter');
+var currentSetIdx = 0;
+var currentItemIdx = 0;
 
 function renderSetSlide(){
   var s = STATE.sets[currentSetIdx];
-  if (!s || !s.items || !s.items.length) return;
-  if (currentItemIdx < 0) currentItemIdx = s.items.length - 1;
-  if (currentItemIdx >= s.items.length) currentItemIdx = 0;
+  if (!s || !Array.isArray(s.items) || !s.items.length) return;
+  currentItemIdx = ((currentItemIdx % s.items.length) + s.items.length) % s.items.length;
   var it = s.items[currentItemIdx];
   var label = getItemLabel(it, currentItemIdx, s.items.length);
-  $('vSetTitle').textContent = (s.code ? s.code + ' · ' : '') + getSetTitle(s);
-  $('vSetSub').textContent = s.loc ? ('— ' + s.loc) : '';
+  if ($('vSetTitle')) $('vSetTitle').textContent = (s.code ? s.code + ' · ' : '') + getSetTitle(s);
+  if ($('vSetSub')) $('vSetSub').textContent = s.loc ? ('— ' + s.loc) : '';
+  if ($('vSetHint')) $('vSetHint').textContent = STATE.lang === 'en'
+    ? 'Use ‹ › or Left/Right arrow keys to browse this set'
+    : 'ใช้ปุ่ม ‹ › หรือลูกศรซ้าย-ขวาเพื่อเลื่อนดูภาพในเซ็ตนี้';
   vStage.innerHTML = renderItemFull(it, label);
-  vCounter.textContent = (currentItemIdx + 1) + ' / ' + s.items.length;
-  $('vItemTitle').textContent = label;
-  $('vItemNote').textContent = getSetSub(s);
+  if (vCounter) vCounter.textContent = (currentItemIdx + 1) + ' / ' + s.items.length;
+  if ($('vItemTitle')) $('vItemTitle').textContent = label;
+  if ($('vItemNote')) $('vItemNote').textContent = getSetSub(s);
   if ($('vEditSetTitle')) $('vEditSetTitle').value = STATE.lang === 'en' ? (s.titleEn || '') : (s.titleTh || '');
   if ($('vEditSetLoc')) $('vEditSetLoc').value = s.loc || '';
   if ($('vEditItemLabel')) $('vEditItemLabel').value = STATE.lang === 'en' ? (it.labelEn || '') : (it.labelTh || '');
@@ -1907,7 +2200,7 @@ function bindViewerInlineEdits(){
     $('vEditSetTitle').oninput = function(){
       var s = STATE.sets[currentSetIdx]; if (!s) return;
       if (isEn) s.titleEn = this.value; else s.titleTh = this.value;
-      $('vSetTitle').textContent = (s.code ? s.code + ' · ' : '') + getSetTitle(s);
+      if ($('vSetTitle')) $('vSetTitle').textContent = (s.code ? s.code + ' · ' : '') + getSetTitle(s);
       saveState(); renderGrid();
     };
   }
@@ -1915,7 +2208,7 @@ function bindViewerInlineEdits(){
     $('vEditSetLoc').oninput = function(){
       var s = STATE.sets[currentSetIdx]; if (!s) return;
       s.loc = this.value;
-      $('vSetSub').textContent = s.loc ? ('— ' + s.loc) : '';
+      if ($('vSetSub')) $('vSetSub').textContent = s.loc ? ('— ' + s.loc) : '';
       saveState(); renderGrid();
     };
   }
@@ -1924,7 +2217,7 @@ function bindViewerInlineEdits(){
       var s = STATE.sets[currentSetIdx]; if (!s || !s.items[currentItemIdx]) return;
       var it = s.items[currentItemIdx];
       if (isEn) it.labelEn = this.value; else it.labelTh = this.value;
-      $('vItemTitle').textContent = getItemLabel(it, currentItemIdx, s.items.length);
+      if ($('vItemTitle')) $('vItemTitle').textContent = getItemLabel(it, currentItemIdx, s.items.length);
       saveState(); renderAutoSlider();
     };
   }
@@ -1932,7 +2225,7 @@ function bindViewerInlineEdits(){
     $('vEditSetSub').oninput = function(){
       var s = STATE.sets[currentSetIdx]; if (!s) return;
       if (isEn) s.subEn = this.value; else s.subTh = this.value;
-      $('vItemNote').textContent = getSetSub(s);
+      if ($('vItemNote')) $('vItemNote').textContent = getSetSub(s);
       saveState(); renderGrid();
     };
   }
@@ -1945,17 +2238,56 @@ function openSetViewer(setIdx, itemIdx){
   currentItemIdx = itemIdx || 0;
   bindViewerInlineEdits();
   renderSetSlide();
-  if (typeof dlg.showModal === 'function') dlg.showModal();
-  else dlg.setAttribute('open', '');
+  if (dlg && typeof dlg.showModal === 'function') dlg.showModal();
+  else if (dlg) dlg.setAttribute('open', '');
 }
 
-$('vPrev').addEventListener('click', function(){ currentItemIdx--; renderSetSlide(); });
-$('vNext').addEventListener('click', function(){ currentItemIdx++; renderSetSlide(); });
-$('vClose').addEventListener('click', function(){
-  if (typeof dlg.close === 'function') dlg.close();
-  else dlg.removeAttribute('open');
+if ($('vPrev')) $('vPrev').addEventListener('click', function(){ currentItemIdx--; renderSetSlide(); });
+if ($('vNext')) $('vNext').addEventListener('click', function(){ currentItemIdx++; renderSetSlide(); });
+if ($('vOwnerDownload')) $('vOwnerDownload').addEventListener('click', function(){
+  if (!ownerUnlocked) {
+    showToast('เฉพาะเจ้าของเว็บที่เข้าสู่ระบบหลังบ้านเท่านั้นที่ดาวน์โหลดภาพได้');
+    return;
+  }
+  var s = STATE.sets[currentSetIdx];
+  var it = s && s.items && s.items[currentItemIdx];
+  if (!it) return;
+  try {
+    var safeName = ((s.code || 'villa') + '-' + (currentItemIdx + 1)).replace(/[^a-zA-Z0-9ก-๙_-]+/g, '-');
+    if (it.kind === 'image' && it.src) {
+      var a = document.createElement('a');
+      a.href = it.src;
+      a.download = safeName + '.jpg';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showToast('กำลังดาวน์โหลดรูปภาพต้นฉบับ');
+      return;
+    }
+    var svgMarkup = it.kind === 'svg'
+      ? villaSvg(it.t != null ? it.t : 0.5, it.f || 0)
+      : '';
+    if (svgMarkup) {
+      var blob = new Blob([svgMarkup], { type: 'image/svg+xml;charset=utf-8' });
+      var url = URL.createObjectURL(blob);
+      var link = document.createElement('a');
+      link.href = url;
+      link.download = safeName + '.svg';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+      showToast('ดาวน์โหลดไฟล์ภาพแล้ว');
+    }
+  } catch(e){
+    showToast('ไม่สามารถดาวน์โหลดไฟล์ได้ในขณะนี้');
+  }
 });
-vThumbs.addEventListener('click', function(e){
+if ($('vClose')) $('vClose').addEventListener('click', function(){
+  if (dlg && typeof dlg.close === 'function') dlg.close();
+  else if (dlg) dlg.removeAttribute('open');
+});
+if (vThumbs) vThumbs.addEventListener('click', function(e){
   var b = e.target.closest('[data-thumb-idx]');
   if (!b) return;
   currentItemIdx = +b.dataset.thumbIdx;
@@ -1963,11 +2295,144 @@ vThumbs.addEventListener('click', function(e){
 });
 
 document.addEventListener('keydown', function(e){
-  if (!dlg.open) return;
+  if ($('cardLightbox') && $('cardLightbox').classList.contains('open')) {
+    if (e.key === 'Escape') closeCardLightbox();
+    if (e.key === 'ArrowLeft') setCardFlipAngle(0, false);
+    if (e.key === 'ArrowRight') setCardFlipAngle(180, false);
+    return;
+  }
+  if ($('zoomOverlay') && $('zoomOverlay').classList.contains('open')) {
+    if (e.key === 'Escape') closeZoomOverlay();
+    return;
+  }
+  if (!dlg || !dlg.open) return;
   if (document.activeElement && ['INPUT','TEXTAREA','SELECT'].indexOf(document.activeElement.tagName) !== -1) return;
   if (e.key === 'ArrowLeft') { currentItemIdx--; renderSetSlide(); }
   if (e.key === 'ArrowRight') { currentItemIdx++; renderSetSlide(); }
 });
+
+// === Mobile Pinch-to-Zoom & Fullscreen Image Expand ===
+var zScale = 1, zTx = 0, zTy = 0;
+var zPointers = {};
+var zStartDist = 0, zStartScale = 1;
+var zPanStartX = 0, zPanStartY = 0, zOrigTx = 0, zOrigTy = 0;
+var zLastTap = 0;
+
+function applyZoomTransform(){
+  var target = $('zoomTarget');
+  if (!target) return;
+  if (zScale <= 1) { zScale = 1; zTx = 0; zTy = 0; }
+  target.style.transform = 'translate(' + zTx.toFixed(1) + 'px, ' + zTy.toFixed(1) + 'px) scale(' + zScale.toFixed(3) + ')';
+  if ($('zoomResetBtn')) $('zoomResetBtn').textContent = Math.round(zScale * 100) + '%';
+}
+
+function openZoomOverlay(){
+  var s = STATE.sets[currentSetIdx];
+  if (!s || !s.items || !s.items[currentItemIdx]) return;
+  var it = s.items[currentItemIdx];
+  if (it.kind !== 'image' && it.kind !== 'svg') return;
+  var label = getItemLabel(it, currentItemIdx, s.items.length);
+  if ($('zoomCaption')) $('zoomCaption').textContent = label;
+  if ($('zoomTarget')) $('zoomTarget').innerHTML = renderItemFull(it, label);
+  if ($('zoomHint')) $('zoomHint').textContent = STATE.lang === 'en'
+    ? 'Pinch to zoom · Double-tap to toggle · Drag to pan'
+    : 'จีบนิ้วเพื่อซูม · แตะ 2 ครั้งเพื่อขยาย · ลากเพื่อเลื่อนดู';
+  zScale = 1.35; zTx = 0; zTy = 0; zPointers = {};
+  applyZoomTransform();
+  var ov = $('zoomOverlay');
+  if (!ov) return;
+  if (dlg && dlg.open && ov.parentElement !== dlg) dlg.appendChild(ov);
+  ov.classList.add('open');
+}
+
+function closeZoomOverlay(){
+  var ov = $('zoomOverlay');
+  if (!ov) return;
+  ov.classList.remove('open');
+  zPointers = {};
+  if (ov.parentElement !== document.body) document.body.appendChild(ov);
+}
+
+if (vStage) {
+  vStage.addEventListener('click', function(e){
+    if (e.target.closest('button, video, iframe')) return;
+    var s = STATE.sets[currentSetIdx];
+    var it = s && s.items && s.items[currentItemIdx];
+    if (it && (it.kind === 'image' || it.kind === 'svg')) openZoomOverlay();
+  });
+}
+if ($('vStage') && $('vStage').parentElement) {
+  $('vStage').parentElement.addEventListener('click', function(e){
+    if (e.target.closest('button, video, iframe')) return;
+    var s = STATE.sets[currentSetIdx];
+    var it = s && s.items && s.items[currentItemIdx];
+    if (it && (it.kind === 'image' || it.kind === 'svg')) openZoomOverlay();
+  });
+}
+if ($('zoomCloseBtn')) $('zoomCloseBtn').addEventListener('click', closeZoomOverlay);
+if ($('zoomInBtn')) $('zoomInBtn').addEventListener('click', function(){
+  zScale = Math.min(5, zScale + 0.6);
+  applyZoomTransform();
+});
+if ($('zoomOutBtn')) $('zoomOutBtn').addEventListener('click', function(){
+  zScale = Math.max(1, zScale - 0.6);
+  applyZoomTransform();
+});
+if ($('zoomResetBtn')) $('zoomResetBtn').addEventListener('click', function(){
+  zScale = 1; zTx = 0; zTy = 0;
+  applyZoomTransform();
+});
+
+var zoomCanvas = $('zoomCanvas');
+if (zoomCanvas) {
+  zoomCanvas.addEventListener('pointerdown', function(e){
+    zoomCanvas.setPointerCapture(e.pointerId);
+    zPointers[e.pointerId] = { x: e.clientX, y: e.clientY };
+    var ids = Object.keys(zPointers);
+    if (ids.length === 1) {
+      var now = Date.now();
+      if (now - zLastTap < 280) {
+        zScale = zScale > 1.2 ? 1 : 2.5;
+        if (zScale === 1) { zTx = 0; zTy = 0; }
+        applyZoomTransform();
+        zLastTap = 0;
+        return;
+      }
+      zLastTap = now;
+      zPanStartX = e.clientX;
+      zPanStartY = e.clientY;
+      zOrigTx = zTx;
+      zOrigTy = zTy;
+    } else if (ids.length === 2) {
+      var p1 = zPointers[ids[0]], p2 = zPointers[ids[1]];
+      zStartDist = Math.hypot(p2.x - p1.x, p2.y - p1.y) || 1;
+      zStartScale = zScale;
+    }
+  });
+  zoomCanvas.addEventListener('pointermove', function(e){
+    if (!zPointers[e.pointerId]) return;
+    zPointers[e.pointerId] = { x: e.clientX, y: e.clientY };
+    var ids = Object.keys(zPointers);
+    if (ids.length === 2) {
+      var p1 = zPointers[ids[0]], p2 = zPointers[ids[1]];
+      var dist = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+      zScale = Math.max(1, Math.min(5, zStartScale * (dist / zStartDist)));
+      applyZoomTransform();
+    } else if (ids.length === 1 && zScale > 1) {
+      zTx = zOrigTx + (e.clientX - zPanStartX);
+      zTy = zOrigTy + (e.clientY - zPanStartY);
+      applyZoomTransform();
+    }
+  });
+  function clearZoomPointer(e){ delete zPointers[e.pointerId]; }
+  zoomCanvas.addEventListener('pointerup', clearZoomPointer);
+  zoomCanvas.addEventListener('pointercancel', clearZoomPointer);
+  zoomCanvas.addEventListener('wheel', function(e){
+    e.preventDefault();
+    zScale = Math.max(1, Math.min(5, zScale + (e.deltaY < 0 ? 0.35 : -0.35)));
+    applyZoomTransform();
+  }, { passive: false });
+}
 
 function applyLanguage(lang){
   STATE.lang = (lang === 'en') ? 'en' : 'th';
@@ -2011,6 +2476,7 @@ function applyLanguage(lang){
   renderFilters();
   renderGrid();
   renderAutoSlider();
+  attachMediaShields();
 }
 
 document.querySelectorAll('.lang-switch button').forEach(function(b){
@@ -2036,11 +2502,11 @@ if ($('btnCopyBrief')) {
 
 document.querySelectorAll('.svc-pick').forEach(function(btn){
   btn.addEventListener('click', function(){
-    var d = I18N[STATE.lang] || I18N.th;
     var pkg = btn.dataset.pkg || '';
     var line1 = STATE.lang === 'en' ? 'Hello, I am interested in: ' : 'สวัสดีครับ สนใจแพ็กเกจ: ';
     var ta = document.createElement('textarea');
     ta.value = line1 + pkg;
+    ta.setAttribute('readonly', '');
     ta.style.position = 'fixed';
     ta.style.left = '-9999px';
     document.body.appendChild(ta);
@@ -2114,7 +2580,7 @@ if ($('showcaseImgInput')) {
       STATE.site.heroCardImg = dataUrl;
       saveState();
       renderBusinessCard();
-      showToast('อัปเดตรูปนามบัตรด้านหน้าพร้อมลายน้ำแล้ว');
+      showToast('อัปเดตรูปนามบัตรด้านหน้าเรียบร้อยแล้ว');
     });
     this.value = '';
   });
@@ -2128,7 +2594,7 @@ if ($('showcaseBackInput')) {
       STATE.site.heroCardBackImg = dataUrl;
       saveState();
       renderBusinessCard();
-      showToast('อัปเดตรูปนามบัตรด้านหลังพร้อมลายน้ำแล้ว');
+      showToast('อัปเดตรูปนามบัตรด้านหลังเรียบร้อยแล้ว');
     });
     this.value = '';
   });
@@ -2264,7 +2730,7 @@ $('setForm').addEventListener('submit', function(e){
   }
   saveState();
   renderGrid();
-  renderAutoSlider();
+  renderAutoSlider(true);
   if (typeof setDlg.close === 'function') setDlg.close();
   else setDlg.removeAttribute('open');
   showToast('บันทึกเซ็ตวิลล่าเรียบร้อยแล้ว');
@@ -2413,7 +2879,7 @@ if ($('btnDownloadExportCode')) {
       a.click();
       document.body.removeChild(a);
       setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
-      showToast('ดาวน์โหลดไฟล์ index.html ที่ฝังรูปทั้งหมดเรียบร้อยแล้ว');
+      showToast('ดาวน์โหลดไฟล์ index.html เรียบร้อยแล้ว');
     } catch(e){
       showToast('ไม่สามารถดาวน์โหลดไฟล์ได้โดยตรง กรุณากดคัดลอกโค้ดแทน');
     }
