@@ -1063,6 +1063,7 @@ body.editing .tile-admin-tools{display:flex}
    <div class="admin-actions">
     <button type="button" class="adm-btn primary" id="btnNewSet">+ เพิ่มเซ็ตวิลล่าใหม่</button>
     <button type="button" class="adm-btn" id="btnEditSite">✎ แก้ไขชื่อและข้อมูลติดต่อ</button>
+    <button type="button" class="adm-btn primary" id="btnSaveAndDownloadIndex">✓ บันทึกและดาวน์โหลด index.html</button>
     <button type="button" class="adm-btn" id="btnExportCode">💾 เซฟโค้ด HTML</button>
    </div>
   </div>
@@ -2846,7 +2847,12 @@ function buildUpdatedHtmlSource(){
     sets: STATE.sets
   };
   var serializedState = JSON.stringify(payload).replace(/<\/script>/gi, '<\\/script>');
-  var baseDoc = INITIAL_HTML_TEMPLATE || ('<!DOCTYPE html>\n' + document.documentElement.outerHTML);
+  var wasEditing = document.body.classList.contains('editing');
+  if (wasEditing) document.body.classList.remove('editing');
+  var liveDoc = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+  if (wasEditing) document.body.classList.add('editing');
+
+  var baseDoc = liveDoc;
   var markerStart = 'var INITIAL_DATA = ';
   var markerEnd = ';\n\nvar STORAGE_KEY';
   var sIdx = baseDoc.indexOf(markerStart);
@@ -2860,6 +2866,34 @@ function buildUpdatedHtmlSource(){
       return 'var INITIAL_DATA = ' + serializedState + ';\n\nvar STORAGE_KEY';
     }
   );
+}
+
+function downloadIndexHtmlNow(){
+  saveState();
+  var codeText = buildUpdatedHtmlSource();
+  if ($('exportedCodeArea')) {
+    $('exportedCodeArea').value = codeText;
+  }
+  try {
+    var blob = new Blob([codeText], { type:'text/html;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'index.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+    showToast('บันทึกและดาวน์โหลด index.html แล้ว นำไปอัปโหลดขึ้น GitHub ได้เลย');
+  } catch(e){
+    showToast('ไม่สามารถดาวน์โหลดไฟล์ได้โดยตรง กรุณากดคัดลอกโค้ดแทน');
+  }
+}
+
+if ($('btnSaveAndDownloadIndex')) {
+  $('btnSaveAndDownloadIndex').addEventListener('click', function(){
+    downloadIndexHtmlNow();
+  });
 }
 
 if ($('btnExportCode')) {
@@ -2888,21 +2922,7 @@ if ($('btnCopyExportCode')) {
 
 if ($('btnDownloadExportCode')) {
   $('btnDownloadExportCode').addEventListener('click', function(){
-    var codeText = $('exportedCodeArea') ? $('exportedCodeArea').value : buildUpdatedHtmlSource();
-    try {
-      var blob = new Blob([codeText], { type:'text/html;charset=utf-8' });
-      var url = URL.createObjectURL(blob);
-      var a = document.createElement('a');
-      a.href = url;
-      a.download = 'index.html';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
-      showToast('ดาวน์โหลดไฟล์ index.html เรียบร้อยแล้ว');
-    } catch(e){
-      showToast('ไม่สามารถดาวน์โหลดไฟล์ได้โดยตรง กรุณากดคัดลอกโค้ดแทน');
-    }
+    downloadIndexHtmlNow();
   });
 }
 
