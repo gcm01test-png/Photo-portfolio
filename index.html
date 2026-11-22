@@ -1574,7 +1574,7 @@ function attachMediaShields(){
 var INITIAL_HTML_TEMPLATE = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
 var STORAGE_KEY = 'villa_portfolio_state_v1';
 var VIEWS_BACKUP_KEY = 'villa_portfolio_views_v1';
-var VIEW_COUNTER_NS = 'villa_portfolio_inthat_2026';
+var VIEW_COUNTER_BASE_NS = 'villa_portfolio_inthat_2026';
 var ownerUnlocked = false;
 
 function $(id){ return document.getElementById(id); }
@@ -1820,50 +1820,110 @@ function loadState(){
 var STATE = loadState();
 var activeCat = 'ทั้งหมด';
 
+function getViewCounterNamespace(){
+  try {
+    var host = (window.location && window.location.hostname) ? String(window.location.hostname).toLowerCase() : 'local';
+    var cleanHost = host.replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 32);
+    if (cleanHost) {
+      return VIEW_COUNTER_BASE_NS + '_' + cleanHost;
+    }
+  } catch(e){}
+  return VIEW_COUNTER_BASE_NS;
+}
+
 function getRemoteCounterKey(setObj, idx){
   var base = (setObj && setObj.id) ? String(setObj.id) : ('villa-' + (idx + 1));
   return base.replace(/[^a-zA-Z0-9_-]/g, '_');
 }
 
+function applyRemoteCountValue(setIdx, rawCount, incrementIfNeeded){
+  var s = STATE.sets[setIdx];
+  if (!s) return;
+  var num = parseInt(rawCount, 10);
+  if (isNaN(num) || num < 0) return;
+  s.views = incrementIfNeeded ? Math.max(parseInt(s.views, 10) || 0, num) : num;
+  saveState();
+  renderGrid();
+}
+
+function requestCounterViaJsonp(ns, key, isUp, onSuccess){
+  try {
+    var cbName = '__villaViewCb_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+    var script = document.createElement('script');
+    var timer = setTimeout(function(){
+      cleanup();
+    }, 5000);
+
+    function cleanup(){
+      clearTimeout(timer);
+      try { delete window[cbName]; } catch(e){ window[cbName] = undefined; }
+      if (script && script.parentNode) script.parentNode.removeChild(script);
+    }
+
+    window[cbName] = function(data){
+      cleanup();
+      if (data && typeof data.count === 'number' && !isNaN(data.count) && typeof onSuccess === 'function') {
+        onSuccess(Math.floor(data.count));
+      }
+    };
+
+    var suffix = isUp ? '/up' : '';
+    script.src = 'https://api.counterapi.dev/v1/' + encodeURIComponent(ns) + '/' + encodeURIComponent(key) + suffix + '?callback=' + encodeURIComponent(cbName);
+    script.async = true;
+    script.onerror = cleanup;
+    document.body.appendChild(script);
+  } catch(e){}
+}
+
 function hitRemoteViewCounter(setIdx, cb){
   var s = STATE.sets[setIdx];
   if (!s) return;
+  var ns = getViewCounterNamespace();
   var key = getRemoteCounterKey(s, setIdx);
-  var endpoint = 'https://api.counterapi.dev/v1/' + encodeURIComponent(VIEW_COUNTER_NS) + '/' + encodeURIComponent(key) + '/up';
+  var endpoint = 'https://api.counterapi.dev/v1/' + encodeURIComponent(ns) + '/' + encodeURIComponent(key) + '/up';
   fetch(endpoint, { method: 'GET', cache: 'no-store' })
     .then(function(res){ return res.ok ? res.json() : null; })
     .then(function(data){
       if (data && typeof data.count === 'number' && !isNaN(data.count)) {
-        s.views = Math.max(parseInt(s.views, 10) || 0, Math.floor(data.count));
-        saveState();
-        renderGrid();
+        applyRemoteCountValue(setIdx, data.count, false);
+        if (typeof cb === 'function') cb(s.views);
+        return;
       }
-      if (typeof cb === 'function') cb(s.views);
+      requestCounterViaJsonp(ns, key, true, function(cnt){
+        applyRemoteCountValue(setIdx, cnt, false);
+        if (typeof cb === 'function') cb(s.views);
+      });
     })
     .catch(function(){
-      if (typeof cb === 'function') cb(s.views);
+      requestCounterViaJsonp(ns, key, true, function(cnt){
+        applyRemoteCountValue(setIdx, cnt, false);
+        if (typeof cb === 'function') cb(s.views);
+      });
     });
 }
 
 function syncAllRemoteViewCounts(){
   if (!Array.isArray(STATE.sets) || !STATE.sets.length) return;
+  var ns = getViewCounterNamespace();
   STATE.sets.forEach(function(s, idx){
     var key = getRemoteCounterKey(s, idx);
-    var endpoint = 'https://api.counterapi.dev/v1/' + encodeURIComponent(VIEW_COUNTER_NS) + '/' + encodeURIComponent(key);
+    var endpoint = 'https://api.counterapi.dev/v1/' + encodeURIComponent(ns) + '/' + encodeURIComponent(key);
     fetch(endpoint, { method: 'GET', cache: 'no-store' })
       .then(function(res){ return res.ok ? res.json() : null; })
       .then(function(data){
         if (data && typeof data.count === 'number' && !isNaN(data.count)) {
-          var serverCount = Math.floor(data.count);
-          var localCount = Math.max(0, parseInt(s.views, 10) || 0);
-          if (serverCount > 0 || localCount === 0) {
-            s.views = serverCount;
-            saveState();
-            renderGrid();
-          }
+          applyRemoteCountValue(idx, data.count, false);
+        } else {
+          requestCounterViaJsonp(ns, key, false, function(cnt){
+            applyRemoteCountValue(idx, cnt, false);
+          });
         }
       })
-      .catch(function(){});
+      .catch(function(){
+        requestCounterViaJsonp(ns, key, false, function(cnt){
+          applyRemoteCountValue(idx, cnt, false);
+        });
+      });
   });
 }
 
@@ -2484,7 +2544,13 @@ function openSetViewer(setIdx, itemIdx){
   STATE.sets[setIdx].views = curViews + 1;
   saveState();
   renderGrid();
-  hitRemoteViewCounter(setIdx);
+  hitRemoteViewCounter(setIdx, function(latestViews){
+    if (typeof latestViews === 'number' && !isNaN(latestViews)) {
+      STATE.sets[setIdx].views = latestViews;
+      saveState();
+      renderGrid();
+    }
+  });
   bindViewerInlineEdits();
   renderSetSlide();
   if (dlg && typeof dlg.showModal === 'function') dlg.showModal();
