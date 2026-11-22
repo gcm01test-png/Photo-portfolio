@@ -1339,6 +1339,7 @@ var INITIAL_DATA = {
 };
 
 var STORAGE_KEY = 'villa_portfolio_sets_v1';
+var INITIAL_HTML_TEMPLATE = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
 var ownerUnlocked = false;
 var toastTimer = null;
 var $ = function(id){ return document.getElementById(id); };
@@ -1394,7 +1395,11 @@ function loadState(){
 
 var STATE = loadState();
 function saveState(){
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(STATE)); } catch(e){}
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(STATE));
+  } catch(e){
+    showToast('พื้นที่เบราว์เซอร์เต็ม แต่ข้อมูลยังอยู่ในหน้านี้ — กด "💾 เซฟโค้ด HTML" เพื่อบันทึกไฟล์ไปอัปขึ้น GitHub ได้เลย');
+  }
 }
 
 var I18N = {
@@ -2362,15 +2367,18 @@ function buildUpdatedHtmlSource(){
     site: STATE.site,
     sets: STATE.sets
   }, null, 2);
-  var rawDoc = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
-  return rawDoc.replace(
+  var baseDoc = INITIAL_HTML_TEMPLATE || ('<!DOCTYPE html>\n' + document.documentElement.outerHTML);
+  return baseDoc.replace(
     /var INITIAL_DATA = [\s\S]*?;\n\nvar STORAGE_KEY/,
-    'var INITIAL_DATA = ' + serializedState + ';\n\nvar STORAGE_KEY'
+    function(){
+      return 'var INITIAL_DATA = ' + serializedState + ';\n\nvar STORAGE_KEY';
+    }
   );
 }
 
 if ($('btnExportCode')) {
   $('btnExportCode').addEventListener('click', function(){
+    saveState();
     if ($('exportedCodeArea')) {
       $('exportedCodeArea').value = buildUpdatedHtmlSource();
     }
@@ -2388,7 +2396,7 @@ if ($('btnCopyExportCode')) {
     ta.focus();
     ta.select();
     try { document.execCommand('copy'); } catch(e){}
-    showToast('คัดลอกโค้ด HTML ที่อัปเดตแล้วเรียบร้อย');
+    showToast('คัดลอกโค้ด HTML ที่ฝังรูปทั้งหมดแล้ว นำไปวางใน GitHub (index.html) ได้เลย');
   });
 }
 
@@ -2400,12 +2408,12 @@ if ($('btnDownloadExportCode')) {
       var url = URL.createObjectURL(blob);
       var a = document.createElement('a');
       a.href = url;
-      a.download = 'villa-portfolio-updated.html';
+      a.download = 'index.html';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
-      showToast('ดาวน์โหลดไฟล์ villa-portfolio-updated.html แล้ว');
+      showToast('ดาวน์โหลดไฟล์ index.html ที่ฝังรูปทั้งหมดเรียบร้อยแล้ว');
     } catch(e){
       showToast('ไม่สามารถดาวน์โหลดไฟล์ได้โดยตรง กรุณากดคัดลอกโค้ดแทน');
     }
