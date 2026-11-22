@@ -1821,13 +1821,6 @@ var STATE = loadState();
 var activeCat = 'ทั้งหมด';
 
 function getViewCounterNamespace(){
-  try {
-    var host = (window.location && window.location.hostname) ? String(window.location.hostname).toLowerCase() : 'local';
-    var cleanHost = host.replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 32);
-    if (cleanHost) {
-      return VIEW_COUNTER_BASE_NS + '_' + cleanHost;
-    }
-  } catch(e){}
   return VIEW_COUNTER_BASE_NS;
 }
 
@@ -1841,7 +1834,7 @@ function applyRemoteCountValue(setIdx, rawCount, incrementIfNeeded){
   if (!s) return;
   var num = parseInt(rawCount, 10);
   if (isNaN(num) || num < 0) return;
-  s.views = incrementIfNeeded ? Math.max(parseInt(s.views, 10) || 0, num) : num;
+  s.views = num;
   saveState();
   renderGrid();
 }
@@ -1862,8 +1855,9 @@ function requestCounterViaJsonp(ns, key, isUp, onSuccess){
 
     window[cbName] = function(data){
       cleanup();
-      if (data && typeof data.count === 'number' && !isNaN(data.count) && typeof onSuccess === 'function') {
-        onSuccess(Math.floor(data.count));
+      var val = data && (typeof data.count === 'number' ? data.count : (typeof data.value === 'number' ? data.value : null));
+      if (typeof val === 'number' && !isNaN(val) && typeof onSuccess === 'function') {
+        onSuccess(Math.floor(val));
       }
     };
 
@@ -1884,8 +1878,9 @@ function hitRemoteViewCounter(setIdx, cb){
   fetch(endpoint, { method: 'GET', cache: 'no-store' })
     .then(function(res){ return res.ok ? res.json() : null; })
     .then(function(data){
-      if (data && typeof data.count === 'number' && !isNaN(data.count)) {
-        applyRemoteCountValue(setIdx, data.count, false);
+      var val = data && (typeof data.count === 'number' ? data.count : (typeof data.value === 'number' ? data.value : null));
+      if (typeof val === 'number' && !isNaN(val)) {
+        applyRemoteCountValue(setIdx, val, false);
         if (typeof cb === 'function') cb(s.views);
         return;
       }
@@ -1911,8 +1906,9 @@ function syncAllRemoteViewCounts(){
     fetch(endpoint, { method: 'GET', cache: 'no-store' })
       .then(function(res){ return res.ok ? res.json() : null; })
       .then(function(data){
-        if (data && typeof data.count === 'number' && !isNaN(data.count)) {
-          applyRemoteCountValue(idx, data.count, false);
+        var val = data && (typeof data.count === 'number' ? data.count : (typeof data.value === 'number' ? data.value : null));
+        if (typeof val === 'number' && !isNaN(val)) {
+          applyRemoteCountValue(idx, val, false);
         } else {
           requestCounterViaJsonp(ns, key, false, function(cnt){
             applyRemoteCountValue(idx, cnt, false);
@@ -2540,10 +2536,6 @@ function openSetViewer(setIdx, itemIdx){
   if (!STATE.sets[setIdx]) return;
   currentSetIdx = setIdx;
   currentItemIdx = itemIdx || 0;
-  var curViews = Math.max(0, parseInt(STATE.sets[setIdx].views, 10) || 0);
-  STATE.sets[setIdx].views = curViews + 1;
-  saveState();
-  renderGrid();
   hitRemoteViewCounter(setIdx, function(latestViews){
     if (typeof latestViews === 'number' && !isNaN(latestViews)) {
       STATE.sets[setIdx].views = latestViews;
@@ -3435,6 +3427,7 @@ if ($('codeExportClose')) {
 // Initial Render
 applyLanguage(STATE.lang);
 syncAllRemoteViewCounts();
+setInterval(syncAllRemoteViewCounts, 15000);
 restartAutoTimer();
 </script>
 </body>
